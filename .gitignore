@@ -1,0 +1,6 @@
+
+*.o
+results*
+figs*
+rundb
+runcl

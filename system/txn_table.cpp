@@ -29,18 +29,17 @@ void TxnTable::init() {
 }
 
 void TxnTable::dump() {
-  for(uint64_t i = 0; i < pool_size;i++) {
-    if(pool[i]->cnt  == 0)
-      continue;
-      txn_node_t t_node = pool[i]->head;
+    for(uint64_t i = 0; i < pool_size;i++) {
+        if(pool[i]->cnt  == 0) {continue;}
+    
+        txn_node_t t_node = pool[i]->head;
 
-      while (t_node != NULL) {
-        printf("TT (%ld,%ld)\n",t_node->txn_man->read_txn_id(),t_node->txn_man->get_batch_id()
-            );
-        t_node = t_node->next;
-      }
-      
-  }
+        while (t_node != NULL) {
+            printf("TT (%ld,%ld)\n",t_node->txn_man->read_txn_id(),t_node->txn_man->get_batch_id());
+            t_node = t_node->next;
+        }
+        
+    }
 }
 
 bool TxnTable::is_matching_txn_node(txn_node_t t_node, uint64_t txn_id, uint64_t batch_id){

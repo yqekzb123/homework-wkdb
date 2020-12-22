@@ -33,6 +33,7 @@ class TableSchema;
 class CatalogSchema;
 class TxnMgr;
 class Row_occ_template;
+class Row_mvcc;
 class Row_specex;
 
 class RowData
@@ -89,6 +90,8 @@ public:
 
   #if ALGO == OCCTEMPLATE 
   	Row_occ_template * manager;
+  #elif ALGO == MVCC
+  	Row_mvcc * manager;
   #elif ALGO == HSTORE_SPEC
   	Row_specex * manager;
   #elif ALGO == AVOID

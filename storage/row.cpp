@@ -5,6 +5,7 @@
 #include "row.h"
 #include "txn.h"
 #include "row_occ_template.h"
+#include "row_mvcc.h"
 #include "mem_alloc.h"
 #include "manager.h"
 
@@ -189,6 +190,15 @@ RC RowData::get_row(access_t type, TxnMgr * txn, RowData *& row) {
     assert(rc == RCOK);
 	goto end;
 #endif
+#if ALGO == MVCC
+    DEBUG_M("RowData::get_row MVCC alloc \n");
+	txn->cur_row = (RowData *) alloc_memory.alloc(sizeof(RowData));
+	txn->cur_row->init(get_table(), get_part_id());
+    rc = this->manager->access(type,txn,txn->cur_row);
+	row = txn->cur_row;
+    assert(rc == RCOK);
+	goto end;
+#endif
 #if ALGO == HSTORE || ALGO == HSTORE_SPEC || ALGO == CALVIN
 #if ALGO == HSTORE_SPEC
   if(txn_table.spec_mode) {
@@ -247,14 +257,25 @@ void RowData::return_row(RC rc, access_t type, TxnMgr * txn, RowData * row) {
 	this->manager->lock_release(txn);
 #elif ALGO == OCCTEMPLATE 
 	assert (row != NULL);
-  if (rc == Abort) {
-    manager->abort(type,txn);
-  } else {
-    manager->commit(type,txn,row);
-  }
+	if (rc == Abort) {
+		manager->abort(type,txn);
+	} else {
+		manager->commit(type,txn,row);
+	}
 
 	row->free_row();
-  DEBUG_M("RowData::return_row Occ_template free \n");
+  	DEBUG_M("RowData::return_row Occ_template free \n");
+	alloc_memory.free(row, sizeof(RowData));
+#elif ALGO == MVCC 
+	assert (row != NULL);
+	if (rc == Abort) {
+		manager->abort(type,txn);
+	} else {
+		manager->commit(type,txn,row);
+	}
+
+	row->free_row();
+  	DEBUG_M("RowData::return_row Occ_template free \n");
 	alloc_memory.free(row, sizeof(RowData));
 #elif ALGO == HSTORE || ALGO == HSTORE_SPEC 
 	assert (row != NULL);

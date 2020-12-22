@@ -274,6 +274,7 @@ extern TestCases					g_test_case;
 #define CALVIN      10
 #define OCCTEMPLATE      11
 #define WDL           12
+#define MVCC          14
 // TIMESTAMP allocation method.
 #define TS_MUTEX          1
 #define TS_CAS            2

@@ -3,7 +3,7 @@
 #include "sequencer.h"
 #include "qry_ycsb.h"
 #include "qry_tpcc.h"
-
+#include "da_query.h"
 #include "mem_alloc.h"
 #include "transport.h"
 #include "workload.h"
@@ -76,7 +76,8 @@ void Sequencer::process_ack(Msg * message, uint64_t thd_id) {
       }
 #elif WORKLOAD == PPS
       PPSClientQueryMessage* cl_msg = (PPSClientQueryMessage*)wait_txn_list[id].message;
-
+#elif WORKLOAD == DA
+			DAClientQueryMessage* cl_msg = (DAClientQueryMessage*)wait_txn_list[id].message;
 #endif
 #if WORKLOAD == PPS
       if ( WORKLOAD == PPS && ALGO == CALVIN && ((cl_msg->txn_type == PPS_GETPARTBYSUPPLIER) ||
@@ -212,6 +213,8 @@ void Sequencer::process_txn( Msg * message,uint64_t thd_id, uint64_t early_start
     std::set<uint64_t> participants = PPSQry::participants(message,_wl);
 #elif WORKLOAD == TEST
     std::set<uint64_t> participants = QryTPCC::participants(message,_wl);
+#elif WORKLOAD == DA
+		std::set<uint64_t> participants = DAQuery::participants(message,_wl);
 #endif
     uint32_t server_ack_cnt = participants.size();
     assert(server_ack_cnt > 0);

@@ -33,6 +33,12 @@ void IndexHash::delete_this_index() {
   delete _buckets;
 }
 
+void IndexHash::index_reset() {
+  for (UInt32 n = 0; n < _bucket_cnt_per_part; n ++) {
+			_buckets[0][n].delete_bucket();
+  }
+}
+
 bool IndexHash::index_is_exist(idx_key_t key) {
 	assert(false);
 }

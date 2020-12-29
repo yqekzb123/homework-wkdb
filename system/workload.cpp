@@ -116,6 +116,10 @@ RC WLSchema::init_schema(const char * schema_file) {
       else if ( !tname.compare(1, 4, "USES") ) {
         table_size = MAX_PPS_SUPPLIER_KEY;
       }
+#elif WORKLOAD == DA
+      if (!tname.compare(1, 5, "DAtab")) {
+        table_size = MAX_DA_TABLE_SIZE;
+      }
 #else
       table_size = g_table_size_synth / g_cnt_part;
 #endif
@@ -135,12 +139,11 @@ RC WLSchema::init_schema(const char * schema_file) {
 
 
 void WLSchema::index_delete_all() {
-  /*
-  for (auto string index_name = indexes.keys(); index_name = index_name.next()) {
-    INDEX * index = (INDEX *) indexes[index_name];
-    index->delete_this_index();
-  }
-  */
+  #if WORKLOAD ==DA
+    for (auto index :indexes) {
+      index.second->index_reset();
+    }
+  #endif
 }
 
 void WLSchema::index_insert(string index_name, uint64_t key, RowData * row) {

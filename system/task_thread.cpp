@@ -22,7 +22,7 @@
 void TaskThread::setup() {
 
 	if( read_thd_id() == 0) {
-    send_init_done_to_nodes();
+	send_init_done_to_nodes();
   }
   _thd_txn_id = 0;
 
@@ -95,11 +95,11 @@ void TaskThread::process(Msg * message) {
 
 void TaskThread::check_if_done(RC rc) {
   if(txn_man->waiting_for_rps())
-    return;
+	return;
   if(rc == Commit)
-    commit();
+	commit();
   if(rc == Abort)
-    abort();
+	abort();
 }
 
 void TaskThread::release_txn_manager() {
@@ -147,10 +147,10 @@ void TaskThread::abort() {
 
   ++txn_man->abort_cnt;
   txn_man->reset();
-
+#if WORKLOAD != DA
   uint64_t penalty = abort_queue.enqueue(read_thd_id(), txn_man->read_txn_id(),txn_man->get_abort_cnt());
-
   txn_man->txn_stats.total_abort_time += penalty;
+#endif
 
 }
 
@@ -161,6 +161,25 @@ TxnMgr * TaskThread::get_transaction_manager(Msg * message) {
   TxnMgr * local_txn_man = txn_table.get_transaction_manager(read_thd_id(),message->read_txn_id(),0);
 #endif
   return local_txn_man;
+}
+
+char type2char(DATxnType txn_type)
+{
+  switch (txn_type)
+  {
+    case DA_READ:
+      return 'R';
+    case DA_WRITE:
+      return 'W';
+    case DA_COMMIT:
+      return 'C';
+    case DA_ABORT:
+      return 'A';
+    case DA_SCAN:
+      return 'S';
+    default:
+      return 'U';
+  }
 }
 
 RC TaskThread::run() {
@@ -175,14 +194,35 @@ RC TaskThread::run() {
     heartbeat();
 
     progress_stats();
-
-    Msg * message = task_queue.dequeue(read_thd_id());
-
+    Msg * message;
+    // #define TEST_MSG_order
+    #ifdef TEST_MSG_order
+      while(1)
+      {
+      message = task_queue.dequeue(read_thd_id());
+      if (!message) {
+        if (idle_starttime == 0) idle_starttime = acquire_ts();
+        continue;
+      }
+      printf("s seq_id:%lu type:%c trans_id:%lu item:%c state:%lu next_state:%lu\n",
+      ((DAClientQueryMessage*)message)->seq_id,
+      type2char(((DAClientQueryMessage*)message)->txn_type),
+      ((DAClientQueryMessage*)message)->trans_id,
+      static_cast<char>('x'+((DAClientQueryMessage*)message)->item_id),
+      ((DAClientQueryMessage*)message)->state,
+      (((DAClientQueryMessage*)message)->next_state));
+      fflush(stdout);
+      }
+    #endif
+    message = task_queue.dequeue(read_thd_id());
     if(!message) {
       if(idle_starttime ==0)
-        idle_starttime = acquire_ts();
+      idle_starttime = acquire_ts();
       continue;
     }
+
+    simulate_man->last_da_query_time = acquire_ts();
+
     if(idle_starttime > 0) {
       INC_STATS(_thd_id,worker_idle_time,acquire_ts() - idle_starttime);
       idle_starttime = 0;
@@ -192,60 +232,56 @@ RC TaskThread::run() {
     if(message->rtype != WKCQRY || ALGO == CALVIN) {
       txn_man = get_transaction_manager(message);
 
-      if (ALGO != CALVIN && IS_LOCAL(txn_man->read_txn_id())) {
-        if (message->rtype != WKRTXN_CONT && ((message->rtype != WKRACK_PREP) || (txn_man->get_rsp_cnt() == 1))) {
-          txn_man->txn_stats.task_queue_time_short += message->lat_task_queue_time;
-          txn_man->txn_stats.cc_block_time_short += message->lat_cc_block_time;
-          txn_man->txn_stats.cc_time_short += message->lat_cc_time;
-          txn_man->txn_stats.msg_queue_time_short += message->lat_msg_queue_time;
-          txn_man->txn_stats.process_time_short += message->lat_process_time;
-          /*
-          if (message->lat_network_time/BILLION > 1.0) {
-            printf("%ld %d %ld -> %ld: %f %f\n",message->txn_id, message->rtype, message->return_node_id,get_node_id() ,message->lat_network_time/BILLION, message->lat_other_time/BILLION);
-          } 
-          */
-          txn_man->txn_stats.network_time_short += message->lat_network_time;
-        }
+	  if (ALGO != CALVIN && IS_LOCAL(txn_man->read_txn_id())) {
+		if (message->rtype != WKRTXN_CONT && ((message->rtype != WKRACK_PREP) || (txn_man->get_rsp_cnt() == 1))) {
+		  txn_man->txn_stats.task_queue_time_short += message->lat_task_queue_time;
+		  txn_man->txn_stats.cc_block_time_short += message->lat_cc_block_time;
+		  txn_man->txn_stats.cc_time_short += message->lat_cc_time;
+		  txn_man->txn_stats.msg_queue_time_short += message->lat_msg_queue_time;
+  	  txn_man->txn_stats.process_time_short += message->lat_process_time;
 
-      } else {
-          txn_man->txn_stats.clear_short();
-      }
-      if (ALGO != CALVIN) {
-        txn_man->txn_stats.lat_network_time_start = message->lat_network_time;
-        txn_man->txn_stats.lat_other_time_start = message->lat_other_time;
-      }
-      txn_man->txn_stats.msg_queue_time += message->mq_time;
-      txn_man->txn_stats.msg_queue_time_short += message->mq_time;
-      message->mq_time = 0;
-      txn_man->txn_stats.task_queue_time += message->wq_time;
-      txn_man->txn_stats.task_queue_time_short += message->wq_time;
-      //txn_man->txn_stats.network_time += message->ntwk_time;
-      message->wq_time = 0;
-      txn_man->txn_stats.task_queue_cnt += 1;
+		  txn_man->txn_stats.network_time_short += message->lat_network_time;
+		}
+
+	  } else {
+		  txn_man->txn_stats.clear_short();
+	  }
+	  if (ALGO != CALVIN) {
+      txn_man->txn_stats.lat_network_time_start = message->lat_network_time;
+      txn_man->txn_stats.lat_other_time_start = message->lat_other_time;
+	  }
+	  txn_man->txn_stats.msg_queue_time += message->mq_time;
+	  txn_man->txn_stats.msg_queue_time_short += message->mq_time;
+	  message->mq_time = 0;
+	  txn_man->txn_stats.task_queue_time += message->wq_time;
+	  txn_man->txn_stats.task_queue_time_short += message->wq_time;
+	  //txn_man->txn_stats.network_time += message->ntwk_time;
+	  message->wq_time = 0;
+	  txn_man->txn_stats.task_queue_cnt += 1;
 
 
-      ready_starttime = acquire_ts();
-      bool ready = txn_man->unset_ready();
-      INC_STATS(read_thd_id(),worker_activate_txn_time,acquire_ts() - ready_starttime);
-      if(!ready) {
-        // Return to work queue, end processing
-        task_queue.enqueue(read_thd_id(),message,true);
-        continue;
-      }
-      txn_man->register_thread(this);
-    }
+	  ready_starttime = acquire_ts();
+	  bool ready = txn_man->unset_ready();
+	  INC_STATS(read_thd_id(),worker_activate_txn_time,acquire_ts() - ready_starttime);
+	  if(!ready) {
+      // Return to work queue, end processing
+      task_queue.enqueue(read_thd_id(),message,true);
+      continue;
+	  }
+	  txn_man->register_thread(this);
+	}
 
-    process(message);
+	process(message);
 
-    ready_starttime = acquire_ts();
-    if(txn_man) {
-      bool ready = txn_man->set_ready();
-      assert(ready);
-    }
-    INC_STATS(read_thd_id(),worker_deactivate_txn_time,acquire_ts() - ready_starttime);
+	ready_starttime = acquire_ts();
+	if(txn_man) {
+	  bool ready = txn_man->set_ready();
+	  assert(ready);
+	}
+	INC_STATS(read_thd_id(),worker_deactivate_txn_time,acquire_ts() - ready_starttime);
 
-    // delete message
-    ready_starttime = acquire_ts();
+	// delete message
+	ready_starttime = acquire_ts();
 #if ALGO != CALVIN
     message->release();
 #endif
@@ -294,32 +330,32 @@ RC TaskThread::rack_prep_process(Msg * message) {
   uint64_t lower = ((AckMessage*)message)->lower;
   uint64_t upper = ((AckMessage*)message)->upper;
   if(lower > txn_timestamp_bounds.get_lower(read_thd_id(),message->read_txn_id())) {
-    txn_timestamp_bounds.set_lower(read_thd_id(),message->read_txn_id(),lower);
+	txn_timestamp_bounds.set_lower(read_thd_id(),message->read_txn_id(),lower);
   }
   if(upper < txn_timestamp_bounds.get_upper(read_thd_id(),message->read_txn_id())) {
-    txn_timestamp_bounds.set_upper(read_thd_id(),message->read_txn_id(),upper);
+	txn_timestamp_bounds.set_upper(read_thd_id(),message->read_txn_id(),upper);
   }
   DEBUG("%ld bound set: [%ld,%ld] -> [%ld,%ld]\n",message->read_txn_id(),lower,upper,txn_timestamp_bounds.get_lower(read_thd_id(),message->read_txn_id()),txn_timestamp_bounds.get_upper(read_thd_id(),message->read_txn_id()));
   if(((AckMessage*)message)->rc != RCOK) {
-    txn_timestamp_bounds.set_state(read_thd_id(),message->read_txn_id(),OCCTEMPLATE_ABORTED);
+	txn_timestamp_bounds.set_state(read_thd_id(),message->read_txn_id(),OCCTEMPLATE_ABORTED);
   }
 #endif
   if(responses_left > 0) 
-    return WAIT;
+	return WAIT;
 
   // Done waiting 
   if(txn_man->get_rc() == RCOK) {
-    rc  = txn_man->validate();
+	rc  = txn_man->validate();
   }
   if(rc == Abort || txn_man->get_rc() == Abort) {
-    txn_man->txn->rc = Abort;
-    rc = Abort;
+	txn_man->txn->rc = Abort;
+	rc = Abort;
   }
   txn_man->send_finish_msg();
   if(rc == Abort) {
-    txn_man->abort();
+	txn_man->abort();
   } else {
-    txn_man->commit();
+	txn_man->commit();
   }
 
   return rc;
@@ -333,17 +369,17 @@ RC TaskThread::rack_rfin_process(Msg * message) {
   int responses_left = txn_man->received_rps(((AckMessage*)message)->rc);
   assert(responses_left >=0);
   if(responses_left > 0) 
-    return WAIT;
+	return WAIT;
 
   // Done waiting 
   txn_man->txn_stats.two_pc_time += acquire_ts() - txn_man->txn_stats.wait_begintime;
 
   if(txn_man->get_rc() == RCOK) {
-    //txn_man->commit();
-    commit();
+	//txn_man->commit();
+	commit();
   } else {
-    //txn_man->abort();
-    abort();
+	//txn_man->abort();
+	abort();
   }
   return rc;
 }
@@ -355,8 +391,8 @@ RC TaskThread::rqry_rsp_process(Msg * message) {
   txn_man->txn_stats.remote_wait_time += acquire_ts() - txn_man->txn_stats.wait_begintime;
 
   if(((QueryResponseMessage*)message)->rc == Abort) {
-    txn_man->start_abort();
-    return Abort;
+	txn_man->start_abort();
+	return Abort;
   }
 
   RC rc = txn_man->run_txn();
@@ -438,60 +474,103 @@ uint64_t TaskThread::get_next_txn_id() {
 }
 
 RC TaskThread::rtxn_process(Msg * message) {
-        RC rc = RCOK;
-        uint64_t txn_id = UINT64_MAX;
+  RC rc = RCOK;
+  uint64_t txn_id = UINT64_MAX;
 
-        if(message->get_rtype() == WKCQRY) {
-          // This is a new transaction
+  if(message->get_rtype() == WKCQRY) {
+    // This is a new transaction
 
-					// Only set new txn_id when txn first starts
-          txn_id = get_next_txn_id();
-          message->txn_id = txn_id;
+    // Only set new txn_id when txn first starts
+    #if WORKLOAD == DA
+    message->txn_id=((DAClientQueryMessage*)message)->trans_id;
+    txn_id=((DAClientQueryMessage*)message)->trans_id;
+    #else
+    txn_id = get_next_txn_id();
+    message->txn_id = txn_id;
+    #endif
 
-					// Put txn in txn_table
-          txn_man = txn_table.get_transaction_manager(read_thd_id(),txn_id,0);
-          txn_man->register_thread(this);
-          uint64_t ready_starttime = acquire_ts();
-          bool ready = txn_man->unset_ready();
-          INC_STATS(read_thd_id(),worker_activate_txn_time,acquire_ts() - ready_starttime);
-          assert(ready);
-					// if (ALGO == WAIT_DIE) {
-          //   txn_man->set_timestamp(get_next_ts());
-          // }
-          txn_man->txn_stats.begintime = acquire_ts();
-          txn_man->txn_stats.restart_begintime = txn_man->txn_stats.begintime;
-          message->copy_to_txn(txn_man);
-          DEBUG("START %ld %f %lu\n",txn_man->read_txn_id(),simulate_man->seconds_from_begin(acquire_ts()),txn_man->txn_stats.begintime);
-          INC_STATS(read_thd_id(),local_txn_start_cnt,1);
+    // Put txn in txn_table
+    txn_man = txn_table.get_transaction_manager(read_thd_id(),txn_id,0);
+    txn_man->register_thread(this);
+    uint64_t ready_starttime = acquire_ts();
+    bool ready = txn_man->unset_ready();
+    INC_STATS(read_thd_id(),worker_activate_txn_time,acquire_ts() - ready_starttime);
+    assert(ready);
 
-        } else {
-            txn_man->txn_stats.restart_begintime = acquire_ts();
-          DEBUG("RESTART %ld %f %lu\n",txn_man->read_txn_id(),simulate_man->seconds_from_begin(acquire_ts()),txn_man->txn_stats.begintime);
-        }
-
-          // Get new timestamps
-          if(is_cc_new_timestamp()) {
-            txn_man->set_timestamp(get_next_ts());
-					}
-
+    txn_man->txn_stats.begintime = acquire_ts();
+    txn_man->txn_stats.restart_begintime = txn_man->txn_stats.begintime;
+    message->copy_to_txn(txn_man);
+    DEBUG("START %ld %f %lu\n",txn_man->read_txn_id(),simulate_man->seconds_from_begin(acquire_ts()),txn_man->txn_stats.begintime);
+  #if WORKLOAD==DA
+    if(da_start_trans_tab.count(txn_man->read_txn_id())==0)
+    {
+      da_start_trans_tab.insert(txn_man->read_txn_id());
+      INC_STATS(read_thd_id(),local_txn_start_cnt,1);
+    }
+  #else
+    INC_STATS(read_thd_id(), local_txn_start_cnt, 1);
+  #endif
+  } else {
+    txn_man->txn_stats.restart_begintime = acquire_ts();
+    DEBUG("RESTART %ld %f %lu\n",txn_man->read_txn_id(),simulate_man->seconds_from_begin(acquire_ts()),txn_man->txn_stats.begintime);
+  }
+      // Get new timestamps
+  if(is_cc_new_timestamp()) {
+  #if WORKLOAD==DA //mvcc use timestamp
+    if(da_stamp_tab.count(txn_man->read_txn_id())==0)
+    {
+      da_stamp_tab[txn_man->read_txn_id()]=get_next_ts();
+      txn_man->set_timestamp(da_stamp_tab[txn_man->read_txn_id()]);
+    }
+  else
+    txn_man->set_timestamp(da_stamp_tab[txn_man->read_txn_id()]);
+  #else
+    txn_man->set_timestamp(get_next_ts());
+  #endif
+  }
 #if ALGO == OCCTEMPLATE
-          txn_timestamp_bounds.init(read_thd_id(),txn_man->read_txn_id());
-          assert(txn_timestamp_bounds.get_lower(read_thd_id(),txn_man->read_txn_id()) == 0);
-          assert(txn_timestamp_bounds.get_upper(read_thd_id(),txn_man->read_txn_id()) == UINT64_MAX);
-          assert(txn_timestamp_bounds.get_state(read_thd_id(),txn_man->read_txn_id()) == OCCTEMPLATE_RUNNING);
+  #if WORKLOAD==DA
+  if(da_start_stamp_tab.count(txn_man->read_txn_id())==0)
+  {
+    da_start_stamp_tab[txn_man->read_txn_id()]=1;
+    txn_timestamp_bounds.init(read_thd_id(),txn_man->read_txn_id());
+    assert(txn_timestamp_bounds.get_lower(read_thd_id(),txn_man->read_txn_id()) == 0);
+    assert(txn_timestamp_bounds.get_upper(read_thd_id(),txn_man->read_txn_id()) == UINT64_MAX);
+    assert(txn_timestamp_bounds.get_state(read_thd_id(),txn_man->read_txn_id()) == OCCTEMPLATE_RUNNING);
+  }
+  #else
+  txn_timestamp_bounds.init(read_thd_id(),txn_man->read_txn_id());
+  assert(txn_timestamp_bounds.get_lower(read_thd_id(),txn_man->read_txn_id()) == 0);
+  assert(txn_timestamp_bounds.get_upper(read_thd_id(),txn_man->read_txn_id()) == UINT64_MAX);
+  assert(txn_timestamp_bounds.get_state(read_thd_id(),txn_man->read_txn_id()) == OCCTEMPLATE_RUNNING);
+  #endif
 #endif
 
-    rc = init_phase();
-    if(rc != RCOK)
-      return rc;
-
-    // Execute transaction
-    if (WORKLOAD == TEST)
-      rc = runTest(txn_man);
-    else 
-      rc = txn_man->run_txn();
-  check_if_done(rc);
-    return rc;
+	rc = init_phase();
+	if(rc != RCOK)
+	  	return rc;
+	#if WORKLOAD == DA
+		printf("thd_id:%lu stxn_id:%lu batch_id:%lu seq_id:%lu type:%c rtype:%d trans_id:%lu item:%c laststate:%lu state:%lu next_state:%lu\n",
+		this->_thd_id,
+		((DAClientQueryMessage*)message)->txn_id,
+		((DAClientQueryMessage*)message)->batch_id,
+		((DAClientQueryMessage*)message)->seq_id,
+		type2char(((DAClientQueryMessage*)message)->txn_type),
+		((DAClientQueryMessage*)message)->rtype,
+		((DAClientQueryMessage*)message)->trans_id,
+		static_cast<char>('x'+((DAClientQueryMessage*)message)->item_id),
+		((DAClientQueryMessage*)message)->last_state,
+		((DAClientQueryMessage*)message)->state,
+		((DAClientQueryMessage*)message)->next_state);
+		fflush(stdout);
+	#endif
+	// Execute transaction
+	if (WORKLOAD == TEST)
+	  	rc = runTest(txn_man);
+	else 
+	  	rc = txn_man->run_txn();
+  	check_if_done(rc);
+	return rc;
 }
 
 RC TaskThread::runTest(TxnMgr * txn)
@@ -559,12 +638,12 @@ RC TaskThread::rfwd_process(Msg * message) {
   int responses_left = txn_man->received_rps(((ForwardMessage*)message)->rc);
   assert(responses_left >=0);
   if(txn_man->calvin_collect_phase_done()) {
-    assert(ISSERVERN(txn_man->return_id));
-    RC rc = txn_man->run_calvin_txn();
-    if(rc == RCOK && txn_man->calvin_exec_phase_done()) {
-      calvin_wrapup();
-      return RCOK;
-    }   
+	assert(ISSERVERN(txn_man->return_id));
+	RC rc = txn_man->run_calvin_txn();
+	if(rc == RCOK && txn_man->calvin_exec_phase_done()) {
+	  calvin_wrapup();
+	  return RCOK;
+	}   
   }
   return WAIT;
 
@@ -579,7 +658,7 @@ RC TaskThread::calvin_rtxn_process(Msg * message) {
   RC rc = txn_man->run_calvin_txn();
   //if((txn_man->phase==6 && rc == RCOK) || txn_man->active_cnt == 0 || txn_man->participant_cnt == 1) {
   if(rc == RCOK && txn_man->calvin_exec_phase_done()) {
-    calvin_wrapup();
+	calvin_wrapup();
   }
   return RCOK;
 

@@ -10,6 +10,7 @@ class WLSchema;
 class QryYCSB;
 class QryTPCC;
 class PPSQry;
+class DAQuery;
 
 class BaseQry {
 public:
@@ -50,6 +51,8 @@ public:
 	PPSQry * queries;
 #elif WORKLOAD == TEST
 	QryTPCC * queries;
+#elif WORKLOAD == DA
+	DAQuery * queries;
 #endif
 	char pad[CL_SIZE - sizeof(void *) - sizeof(int)];
 };

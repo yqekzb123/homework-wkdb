@@ -7,18 +7,18 @@
 #include "universal.h"
 
 void Row_mvcc::init() {
-  	latch = (pthread_mutex_t *)mem_allocator.alloc(sizeof(pthread_mutex_t));
+  	latch = (pthread_mutex_t *)alloc_memory.alloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(latch, NULL);
 	row_version_len = 0;
 }
 
-RC Row_mvcc::clear_history(access_t type, ts_t ts) {
+RC Row_mvcc::clear_version_list(access_t type, ts_t ts) {
 	RC rc = RCOK;
 	return rc;
 }
 
 
-void Row_mvcc::insert_version(ts_t ts, row_t *row) {
+void Row_mvcc::insert_version(ts_t ts, RowData *row) {
 
 }
 

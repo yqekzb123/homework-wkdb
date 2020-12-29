@@ -58,6 +58,25 @@ void MsgThread::send_batch(uint64_t dest_node_id) {
   INC_STATS(_thd_id,mtx[12],acquire_ts() - begintime);
 }
 
+char type2char1(DATxnType txn_type)
+{
+  switch (txn_type)
+  {
+    case DA_READ:
+      return 'R';
+    case DA_WRITE:
+      return 'W';
+    case DA_COMMIT:
+      return 'C';
+    case DA_ABORT:
+      return 'A';
+    case DA_SCAN:
+      return 'S';
+    default:
+      return 'U';
+  }
+}
+
 void MsgThread::run() {
   
   uint64_t begintime = acquire_ts();
@@ -82,7 +101,19 @@ void MsgThread::run() {
     assert(sbuf->cnt > 0);
     send_batch(dest_node_id);
   }
-
+  #if WORKLOAD == DA
+  if(!is_server&&true)
+  printf("cl seq_id:%lu type:%c trans_id:%lu item:%c state:%lu next_state:%lu write_version:%lu\n",
+      ((DAClientQueryMessage*)message)->seq_id,
+      type2char1(((DAClientQueryMessage*)message)->txn_type),
+      ((DAClientQueryMessage*)message)->trans_id,
+      static_cast<char>('x'+((DAClientQueryMessage*)message)->item_id),
+      ((DAClientQueryMessage*)message)->state,
+      (((DAClientQueryMessage*)message)->next_state),
+      ((DAClientQueryMessage*)message)->write_version);
+      fflush(stdout);
+  #endif
+  
   uint64_t copy_starttime = acquire_ts();
   message->copy_to_buf(&(sbuf->buffer[sbuf->ptr]));
   INC_STATS(_thd_id,msg_copy_output_time,acquire_ts() - copy_starttime);

@@ -50,7 +50,7 @@ private:
 	 * clear_version_list() function:
 	 * To clean up outdated versions in the version chain.
 	 */
-	RowData * clear_version_list(access_t type, ts_t ts);
+	RC clear_version_list(access_t type, ts_t ts);
 
     RowVersionEntry * row_version_list;	// version chain
 	uint64_t row_version_len;		// length of version chain

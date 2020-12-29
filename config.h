@@ -3,19 +3,39 @@
 #define _CONFIG_H_
 
 /***********************************************/
+// DA Trans Creator
+/***********************************************/
+//which creator to use
+#define CREATOR_USE_T false
+
+//TraversalActionSequenceCreator
+#define TRANS_CNT 2
+#define ITEM_CNT 4
+#define SUBTASK_NUM 1
+#define SUBTASK_ID 0
+#define MAX_DML 4
+#define WITH_ABORT false
+#define TAIL_DTL false
+#define SAVE_HISTROY_WITH_EMPTY_OPT false
+#define DYNAMIC_SEQ_LEN false
+
+//InputActionSequenceCreator
+#define INPUT_FILE_PATH "./input.txt"
+
+/***********************************************/
 // Simulation + Hardware
 /***********************************************/
 #define NODE_CNT 1
-#define THREAD_CNT 4
+#define THREAD_CNT 1
 #define REM_THREAD_CNT THREAD_CNT
 #define SEND_THREAD_CNT THREAD_CNT
 #define CORE_CNT 8
 // PART_CNT should be at least NODE_CNT
 #define PART_CNT NODE_CNT
 #define CLIENT_NODE_CNT NODE_CNT
-#define CLIENT_THREAD_CNT 4
-#define CLIENT_REM_THREAD_CNT 2
-#define CLIENT_SEND_THREAD_CNT 2
+#define CLIENT_THREAD_CNT 1
+#define CLIENT_REM_THREAD_CNT 1
+#define CLIENT_SEND_THREAD_CNT 1
 #define CLIENT_RUNTIME false
 
 #define LOAD_METHOD LOAD_MAX
@@ -37,7 +57,7 @@
 // # of transactions to run for warmup
 #define WARMUP            0
 // YCSB or TPCC or TEST
-#define WORKLOAD TEST
+#define WORKLOAD DA
 // print the transaction latency distribution
 #define PRT_LAT_DISTR false
 #define STATS_ENABLE        true
@@ -213,6 +233,16 @@ enum TPCCTxnType {TPCC_ALL,
           TPCC_DELIVERY, 
           TPCC_STOCK_LEVEL};
 extern TPCCTxnType          g_tpcc_txn_type;
+
+enum DATxnType {
+  DA_READ,
+  DA_WRITE,
+  DA_COMMIT,
+  DA_ABORT,
+  DA_SCAN
+};
+#define MAX_DA_TABLE_SIZE 10000
+
 #define TEST_ALL					true
 enum TestCases {
 	READ_WRITE,
@@ -238,7 +268,7 @@ extern TestCases					g_test_case;
 #define DEBUG_TIMESTAMP       false
 #define DEBUG_SYNTH         false
 #define DEBUG_ASSERT        false
-#define DEBUG_DISTR true
+#define DEBUG_DISTR false
 #define DEBUG_ALLOC false
 #define DEBUG_RACE false
 #define DEBUG_TIMELINE        false
@@ -266,6 +296,7 @@ extern TestCases					g_test_case;
 #define YCSB            1
 #define TPCC            2
 #define TEST            3
+#define DA            4
 // Concurrency Control Algorithm
 #define DL_DETECT         3
 #define HSTORE            7

@@ -42,6 +42,8 @@ void MsgQueue::enqueue(uint64_t thd_id, Msg * message,uint64_t dest) {
 #if ALGO == CALVIN
   // Need to have strict message ordering for sequencer thread
   uint64_t rand = thd_id % g_send_thd_cnt_this;
+#elif WORKLOAD == DA
+  uint64_t rand = 0;
 #else
   uint64_t rand = mtx_time_begin % g_send_thd_cnt_this;
 #endif
@@ -72,6 +74,8 @@ uint64_t MsgQueue::dequeue(uint64_t thd_id, Msg *& message) {
     else
       valid = m_queue[thd_id%g_send_thd_cnt_this]->pop(entry);
   }
+#elif WORKLOAD == DA
+  valid = m_queue[0]->pop(entry);
 #else
   //uint64_t ctr_id = thd_id % g_send_thd_cnt_this;
   //uint64_t start_ctr = *ctr[ctr_id];

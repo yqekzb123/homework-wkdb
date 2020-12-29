@@ -5,6 +5,7 @@
         "istream": "cpp",
         "ostream": "cpp",
         "sstream": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "system_error": "cpp"
     }
 }

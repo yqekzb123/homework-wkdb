@@ -43,6 +43,7 @@ public:
   uint64_t local_txn_commit_cnt;
   uint64_t remote_txn_commit_cnt;
   uint64_t total_txn_abort_cnt;
+  uint64_t positive_txn_abort_cnt;
   uint64_t unique_txn_abort_cnt;
   uint64_t local_txn_abort_cnt;
   uint64_t remote_txn_abort_cnt;

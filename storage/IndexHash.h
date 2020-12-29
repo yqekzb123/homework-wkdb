@@ -46,7 +46,8 @@ public:
 	RC 			init(int part_cnt, 
 					TableSchema * table, 
 					uint64_t bucket_cnt);
-  void    delete_this_index();
+	void    	delete_this_index();
+	void 		index_reset();
 	bool 		index_is_exist(idx_key_t key); // check if the key exist.
 	RC 			index_insert(idx_key_t key, itemidData * item, int part_id=-1);
 	RC 			index_insert_non_unique(idx_key_t key, itemidData * item, int part_id=-1);

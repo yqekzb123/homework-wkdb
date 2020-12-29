@@ -739,15 +739,30 @@ RC TxnMgr::get_row(RowData * row, access_t type, RowData *& row_rtn) {
     uint64_t timespan;
     RC rc = RCOK;
     DEBUG_M("TxnMgr::get_row access alloc\n");
-    Access * access;
-    acc_pool.get(read_thd_id(),access);
+    Access * access = NULL;
+
     //uint64_t row_cnt = txn->row_cnt;
     //assert(txn->access.get_count() - 1 == row_cnt);
+    bool isexist = false;
+    uint64_t size = sizeof_write_set();
+    size += sizeof_read_set();
+    // UInt32 n = 0, m = 0;
+    for (uint64_t i = 0; i < size; i++) {
+      if (txn->access[i]->type == WR && 
+        txn->access[i]->orig_row == row) {
+        access = txn->access[i];
+        isexist = true;
+        break;
+      }
+    }
+    if (!access) {
+      acc_pool.get(read_thd_id(),access);
+      rc = row->get_row(type, this, access->data);
+      access->type = type;
+    }
 
     this->last_row = row;
     this->last_type = type;
-
-    rc = row->get_row(type, this, access->data);
 
     if (rc == Abort || rc == WAIT) {
         row_rtn = NULL;
@@ -762,8 +777,8 @@ RC TxnMgr::get_row(RowData * row, access_t type, RowData *& row_rtn) {
 #endif
         return rc;
     }
-	access->type = type;
-	access->orig_row = row;
+	  // access->type = type;
+	  access->orig_row = row;
 #if ROLL_BACK && (ALGO == DL_DETECT || ALGO == HSTORE || ALGO == HSTORE_SPEC)
 	if (type == WR) {
     //printf("alloc 10 %ld\n",read_txn_id());
@@ -787,11 +802,12 @@ RC TxnMgr::get_row(RowData * row, access_t type, RowData *& row_rtn) {
 	}
 #endif
 
-	++txn->row_cnt;
-	if (type == WR)
-		++txn->write_cnt;
-
-  txn->access.add(access);
+	if (!isexist) {
+		++txn->row_cnt;
+		if (type == WR)
+			++txn->write_cnt;
+		txn->access.add(access);
+	}
 
 	timespan = acquire_ts() - begintime;
 	INC_STATS(read_thd_id(), txn_manager_time, timespan);

@@ -1,6 +1,7 @@
 #include "global.h"
 #include "ycsb.h"
 #include "tpcc.h"
+#include "da.h"
 #include "test.h"
 #include "thread.h"
 #include "io_thread.h"
@@ -62,6 +63,8 @@ int main(int argc, char* argv[])
 			m_workload = new WLTPCC; break;
 		case TEST :
 			m_workload = new WLCTEST; break;
+		case DA :
+			m_workload = new DAWorkload; break;
 		default:
 			assert(false);
 	}
@@ -139,8 +142,8 @@ int main(int argc, char* argv[])
 	cpu_set_t cpus;
 	// spawn and run txns again.
 	begintime = get_serverdb_clock();
-  simulate_man->run_begintime = begintime;
-
+  	simulate_man->run_begintime = begintime;
+	simulate_man->last_da_query_time = begintime;
   uint64_t id = 0;
 	for (uint64_t i = 0; i < thd_cnt; i++) {
 		CPU_ZERO(&cpus);

@@ -33,7 +33,8 @@
 #include "logMan.h"
 #include "sim_manager.h"
 //#include "occ_template.h"
-
+#include <boost/lockfree/queue.hpp>
+#include "da_block_queue.h"
 using namespace std;
 
 class mem_alloc;
@@ -61,6 +62,8 @@ class Client_txn;
 class Sequencer;
 class LogMan;
 class TimestampBounds;
+class DAQuery;
+class DABlockQueue;
 
 typedef uint32_t UInt32;
 typedef int32_t SInt32;
@@ -191,6 +194,18 @@ extern UInt32 g_max_items;
 extern UInt32 g_dist_per_wh;
 extern UInt32 g_cust_per_dist;
 extern UInt32 g_max_items_per_txn;
+
+extern boost::lockfree::queue<DAQuery*, boost::lockfree::fixed_sized<true>> da_query_queue;
+extern DABlockQueue da_gen_qry_queue;
+extern bool is_server;
+extern map<uint64_t, ts_t> da_start_stamp_tab;
+extern set<uint64_t> da_start_trans_tab;
+extern map<uint64_t, ts_t> da_stamp_tab;
+extern set<uint64_t> already_abort_tab;
+extern string DA_history_mem;
+extern bool abort_history;
+extern ofstream commit_file;
+extern ofstream abort_file;
 
 // CALVIN
 extern UInt32 g_seq_thread_cnt;

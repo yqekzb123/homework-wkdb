@@ -5,7 +5,7 @@
 #include "table.h"
 #include "qry_ycsb.h"
 #include "qry_tpcc.h"
-
+#include "da_query.h"
 
 /*************************************************/
 //     class Qry_queue
@@ -58,6 +58,8 @@ Qry_thd::init(WLSchema * h_wl, int thd_id) {
 		new(&queries[qid]) PPSQry();
 #elif WORKLOAD == TEST
 		new(&queries[qid]) QryTPCC();
+#elif WORKLOAD == DA
+		new(&queries[qid]) DAQuery();
 #endif
 		queries[qid].init(thd_id, h_wl);
 	}

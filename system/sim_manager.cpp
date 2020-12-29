@@ -18,6 +18,7 @@ void Simulator::init() {
 
 #if TIME_ENABLE
   run_begintime = acquire_ts();
+  last_da_query_time = acquire_ts();
 #else
   run_begintime = get_clock_wall();
 #endif
@@ -30,6 +31,7 @@ void Simulator::set_begintime(uint64_t begintime) {
     if(ATOM_CAS(start_set, false, true)) {
       run_begintime = begintime;
       last_worker_epoch_time = begintime;
+      last_da_query_time = begintime;
       sim_done = false;
       printf("Starttime set to %ld\n",run_begintime);
     } 
@@ -37,7 +39,22 @@ void Simulator::set_begintime(uint64_t begintime) {
 
 bool Simulator::timeout() {
 #if TIME_ENABLE
+	#if WORKLOAD == DA
+		uint64_t t=last_da_query_time;
+		uint64_t now=acquire_ts();
+		if(now<t)
+		{
+			now=t;
+		}
+		bool res =  ((acquire_ts() - run_begintime) >= (g_timer_done + g_warmup_timer)/12)
+		&&((now - t) >= (g_timer_done + g_warmup_timer)/6);
+		if (res) {
+			printf("123\n");
+		}
+		return res;
+	#else
   return (acquire_ts() - run_begintime) >= g_timer_done + g_warmup_timer;
+  #endif
 #else
   return (get_clock_wall() - run_begintime) >= g_timer_done + g_warmup_timer;
 #endif
@@ -52,6 +69,9 @@ bool Simulator::is_done() {
 }
 
 bool Simulator::is_warmup_done() {
+	#if WORKLOAD == DA
+		return true;
+	#endif
   if(warmup)
     return true;
   bool done = ((acquire_ts() - run_begintime) >= g_warmup_timer);

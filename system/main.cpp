@@ -23,7 +23,7 @@
 #include "task_queue.h"
 #include "occ_template.h"
 #include "client_query.h"
-
+#include "da.h"
 void network_test();
 void network_recv();
 void * work_thread(void *);
@@ -56,41 +56,45 @@ int main(int argc, char* argv[])
 
 	int64_t begintime;
 	int64_t endtime;
-  int64_t exectime;
-  begintime = get_serverdb_clock();
-  printf("Initializing stats... ");
-  fflush(stdout);
+	int64_t exectime;
+	begintime = get_serverdb_clock();
+	printf("Initializing stats... ");
+	fflush(stdout);
 	stats.init(g_thread_total_cnt);
-  printf("Done\n");
-  printf("Initializing glob manager... "); //global manager
-  fflush(stdout);
+	printf("Done\n");
+	printf("Initializing glob manager... "); //global manager
+	fflush(stdout);
 	global_manager.init();
-  printf("Done\n");
-  printf("Initializing tport manager... "); //transport manager
-  fflush(stdout);
+	printf("Done\n");
+	printf("Initializing tport manager... "); //transport manager
+	fflush(stdout);
 	tport_manager.init();
-  printf("Done\n");
-  fflush(stdout);
-  printf("Initializing simulate_man... ");
-  fflush(stdout);
-  simulate_man = new Simulator;
-  simulate_man->init();
-  printf("Done\n");
-  fflush(stdout);
+	printf("Done\n");
+	fflush(stdout);
+	printf("Initializing simulate_man... ");
+	fflush(stdout);
+	simulate_man = new Simulator;
+	simulate_man->init();
+	printf("Done\n");
+	fflush(stdout);
 	WLSchema * m_workload;
 	switch (WORKLOAD) {
 		case YCSB :
 			m_workload = new WLYCSB; break;
 		case TPCC :
 			m_workload = new WLTPCC; break;
-    case TEST :
+	case TEST :
 			m_workload = new WLCTEST; break;
+		case DA:
+			m_workload = new DAWorkload;
+			is_server=true;
+			break;
 		default:
 			assert(false);
 	}
 	m_workload->init();
 	printf("WLSchema initialized!\n");
-  fflush(stdout);
+  	fflush(stdout);
 #if NETWORK_TEST
 	tport_manager.init(g_node_id,m_workload);
 	sleep(3);
@@ -101,56 +105,56 @@ int main(int argc, char* argv[])
 
 	return 0;
 #endif
-  fflush(stdout);
-  task_queue.init();
-  printf("Task queue Initialized... ");
-  abort_queue.init();
-  printf("Abort txn queue Initialized... ");
-  fflush(stdout);
-  msg_queue.init();
-  printf("Msg queue Initialized... ");
-  fflush(stdout);
-  txn_man_pool.init(m_workload,0);
-  printf("Txn manager pool Initialized... ");
-  fflush(stdout);
-  txn_pool.init(m_workload,0);
-  printf("Txn pool Initialized... ");
-  fflush(stdout);
-  row_pool.init(m_workload,0);
-  printf("Row pool Initialized... ");
-  fflush(stdout);
-  acc_pool.init(m_workload,0);
-  printf("Access pool Initialized... ");
-  fflush(stdout);
-  tbl_txn_pool.init(m_workload,0);
-  printf("Txn node table pool Initialized... ");
-  fflush(stdout);
-  query_pool.init(m_workload,0);
-  printf("Query pool Initialized... ");
-  fflush(stdout);
-  message_pool.init(m_workload,0);
-  printf("Msg pool Initialized... ");
-  fflush(stdout);
-  txn_table.init();
-  printf("Txn table Initialized... ");
-  fflush(stdout);
+	fflush(stdout);
+	task_queue.init();
+	printf("Task queue Initialized... ");
+	abort_queue.init();
+	printf("Abort txn queue Initialized... ");
+	fflush(stdout);
+	msg_queue.init();
+	printf("Msg queue Initialized... ");
+	fflush(stdout);
+	txn_man_pool.init(m_workload,0);
+	printf("Txn manager pool Initialized... ");
+	fflush(stdout);
+	txn_pool.init(m_workload,0);
+	printf("Txn pool Initialized... ");
+	fflush(stdout);
+	row_pool.init(m_workload,0);
+	printf("Row pool Initialized... ");
+	fflush(stdout);
+	acc_pool.init(m_workload,0);
+	printf("Access pool Initialized... ");
+	fflush(stdout);
+	tbl_txn_pool.init(m_workload,0);
+	printf("Txn node table pool Initialized... ");
+	fflush(stdout);
+	query_pool.init(m_workload,0);
+	printf("Query pool Initialized... ");
+	fflush(stdout);
+	message_pool.init(m_workload,0);
+	printf("Msg pool Initialized... ");
+	fflush(stdout);
+	txn_table.init();
+	printf("Txn table Initialized... ");
+	fflush(stdout);
 #if ALGO == CALVIN
-  seq_man.init(m_workload);
-  printf("Sequencer Initialized... ");
-  fflush(stdout);
+	seq_man.init(m_workload);
+	printf("Sequencer Initialized... ");
+	fflush(stdout);
 #endif
 #if ALGO == OCCTEMPLATE
-  txn_timestamp_bounds.init();
-  printf("Time Table Initialized... ");
-  fflush(stdout);
+  	txn_timestamp_bounds.init();
+	printf("Time Table Initialized... ");
+	fflush(stdout);
 	occ_template_man.init();
-  printf("occ template manager Initialized... ");
-  fflush(stdout);
+	printf("occ template manager Initialized... ");
+	fflush(stdout);
 #endif
 #if LOGGING
-  logger.init("logfile.log");
-  printf("Log manager Initialized... ");
-  fflush(stdout);
+	logger.init("logfile.log");
+	printf("Log manager Initialized... ");
+	fflush(stdout);
 #endif
 
 #if SERVER_GENERATE_QUERIES
@@ -159,103 +163,107 @@ int main(int argc, char* argv[])
   fflush(stdout);
 #endif
 
+#if WORKLOAD==DA
+	commit_file.open("commit_histroy.txt",ios::app);
+	abort_file.open("abort_histroy.txt",ios::app);
+#endif
+
 	// 2. spawn multiple threads
 	uint64_t thd_cnt = g_thd_cnt;
 	uint64_t w_thd_cnt = thd_cnt;
 	uint64_t r_thd_cnt = g_rem_thd_cnt;
 	uint64_t s_thd_cnt = g_send_thd_cnt;
-  uint64_t thd_cnt_all = thd_cnt + r_thd_cnt + s_thd_cnt + g_abort_thread_cnt;
+  	uint64_t thd_cnt_all = thd_cnt + r_thd_cnt + s_thd_cnt + g_abort_thread_cnt;
 #if LOGGING
-  thd_cnt_all += 1; // logger thread
+  	thd_cnt_all += 1; // logger thread
 #endif
 #if ALGO == CALVIN
-  thd_cnt_all += 2; // sequencer + scheduler thread
+  	thd_cnt_all += 2; // sequencer + scheduler thread
 #endif
-    assert(thd_cnt_all == g_this_total_thread_cnt);
+	assert(thd_cnt_all == g_this_total_thread_cnt);
 	
-    pthread_t * p_threads =
-    (pthread_t *) malloc(sizeof(pthread_t) * (thd_cnt_all));
-    pthread_attr_t attrib;
-    pthread_attr_init(&attrib);
+	pthread_t * p_threads =
+	(pthread_t *) malloc(sizeof(pthread_t) * (thd_cnt_all));
+	pthread_attr_t attrib;
+	pthread_attr_init(&attrib);
 
-    work_thds = new TaskThread[w_thd_cnt];
-    input_thds = new InputThread[r_thd_cnt];
-    output_thds = new OutputThread[s_thd_cnt];
-    abort_thds = new AbortTxnThread[1];
-    logger_thds = new LogThread[1];
+	work_thds = new TaskThread[w_thd_cnt];
+	input_thds = new InputThread[r_thd_cnt];
+	output_thds = new OutputThread[s_thd_cnt];
+	abort_thds = new AbortTxnThread[1];
+	logger_thds = new LogThread[1];
 #if ALGO == CALVIN
-    calvin_sched_thds = new CalvinscheduleThread[1];
-    calvin_seq_thds = new CalvinSequenceThread[1];
+	calvin_sched_thds = new CalvinscheduleThread[1];
+	calvin_seq_thds = new CalvinSequenceThread[1];
 #endif
 
-    endtime = get_serverdb_clock();
-    exectime = endtime - begintime;
-    printf("Initialization Time = %ld\n", exectime);
-    fflush(stdout);
-    warmup_done = true;
-    pthread_barrier_init( &warmup_bar, NULL, thd_cnt_all);
+	endtime = get_serverdb_clock();
+	exectime = endtime - begintime;
+	printf("Initialization Time = %ld\n", exectime);
+	fflush(stdout);
+	warmup_done = true;
+	pthread_barrier_init( &warmup_bar, NULL, thd_cnt_all);
 
 #if SET_AFFINITY
-  uint64_t cpus_cnt = 0;
-  cpu_set_t cpus;
+	uint64_t cpus_cnt = 0;
+	cpu_set_t cpus;
 #endif
-  // spawn and run txns again.
-  begintime = get_serverdb_clock();
-  simulate_man->run_begintime = begintime;
-
-  uint64_t id = 0;
-  for (uint64_t i = 0; i < w_thd_cnt; i++) {
+	// spawn and run txns again.
+	begintime = get_serverdb_clock();
+	simulate_man->run_begintime = begintime;
+	simulate_man->last_da_query_time = begintime;
+	uint64_t id = 0;
+	for (uint64_t i = 0; i < w_thd_cnt; i++) {
 #if SET_AFFINITY
-      CPU_ZERO(&cpus);
-      CPU_SET(cpus_cnt, &cpus);
-      pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
-      cpus_cnt++;
+		CPU_ZERO(&cpus);
+		CPU_SET(cpus_cnt, &cpus);
+		pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
+		cpus_cnt++;
 #endif
-      assert(id >= 0 && id < w_thd_cnt);
-      work_thds[i].init(id,g_node_id,m_workload);
-      pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&work_thds[i]);
+		assert(id >= 0 && id < w_thd_cnt);
+		work_thds[i].init(id,g_node_id,m_workload);
+		pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&work_thds[i]);
 	}
 	for (uint64_t j = 0; j < r_thd_cnt ; j++) {
-	    assert(id >= w_thd_cnt && id < w_thd_cnt + r_thd_cnt);
-	    input_thds[j].init(id,g_node_id,m_workload);
-	    pthread_create(&p_threads[id++], NULL, work_thread, (void *)&input_thds[j]);
+		assert(id >= w_thd_cnt && id < w_thd_cnt + r_thd_cnt);
+		input_thds[j].init(id,g_node_id,m_workload);
+		pthread_create(&p_threads[id++], NULL, work_thread, (void *)&input_thds[j]);
 	}
 
 
 	for (uint64_t j = 0; j < s_thd_cnt; j++) {
-	    assert(id >= w_thd_cnt + r_thd_cnt && id < w_thd_cnt + r_thd_cnt + s_thd_cnt);
-	    output_thds[j].init(id,g_node_id,m_workload);
-	    pthread_create(&p_threads[id++], NULL, work_thread, (void *)&output_thds[j]);
+		assert(id >= w_thd_cnt + r_thd_cnt && id < w_thd_cnt + r_thd_cnt + s_thd_cnt);
+		output_thds[j].init(id,g_node_id,m_workload);
+		pthread_create(&p_threads[id++], NULL, work_thread, (void *)&output_thds[j]);
 	  }
 #if LOGGING
-    logger_thds[0].init(id,g_node_id,m_workload);
-    pthread_create(&p_threads[id++], NULL, work_thread, (void *)&logger_thds[0]);
+		logger_thds[0].init(id,g_node_id,m_workload);
+		pthread_create(&p_threads[id++], NULL, work_thread, (void *)&logger_thds[0]);
 #endif
 
 #if ALGO != CALVIN
-  abort_thds[0].init(id,g_node_id,m_workload);
-  pthread_create(&p_threads[id++], NULL, work_thread, (void *)&abort_thds[0]);
+	abort_thds[0].init(id,g_node_id,m_workload);
+	pthread_create(&p_threads[id++], NULL, work_thread, (void *)&abort_thds[0]);
 #endif
 
 #if ALGO == CALVIN
 #if SET_AFFINITY
-		CPU_ZERO(&cpus);
-    CPU_SET(cpus_cnt, &cpus);
-    pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
+	CPU_ZERO(&cpus);
+	CPU_SET(cpus_cnt, &cpus);
+	pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
 		cpus_cnt++;
 #endif
-
-  calvin_sched_thds[0].init(id,g_node_id,m_workload);
-  pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&calvin_sched_thds[0]);
+	calvin_sched_thds[0].init(id,g_node_id,m_workload);
+	pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&calvin_sched_thds[0]);
 #if SET_AFFINITY
-		CPU_ZERO(&cpus);
-    CPU_SET(cpus_cnt, &cpus);
-    pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
+	CPU_ZERO(&cpus);
+	CPU_SET(cpus_cnt, &cpus);
+	pthread_attr_setaffinity_np(&attrib, sizeof(cpu_set_t), &cpus);
 		cpus_cnt++;
 #endif
 
-  calvin_seq_thds[0].init(id,g_node_id,m_workload);
-  pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&calvin_seq_thds[0]);
+	calvin_seq_thds[0].init(id,g_node_id,m_workload);
+	pthread_create(&p_threads[id++], &attrib, work_thread, (void *)&calvin_seq_thds[0]);
 #endif
 
 
@@ -263,23 +271,23 @@ int main(int argc, char* argv[])
 		pthread_join(p_threads[i], NULL);
 
 	endtime = get_serverdb_clock();
-	
-  fflush(stdout);
-  printf("PASS! SimTime = %f\n", (float)(endtime - begintime) / BILLION);
-  if (STATS_ENABLE)
-    stats.print(false);
-  //malloc_stats_print(NULL, NULL, NULL);
-  printf("\n");
-  fflush(stdout);
-  // Free things
+		
+	fflush(stdout);
+	printf("PASS! SimTime = %f\n", (float)(endtime - begintime) / BILLION);
+	if (STATS_ENABLE)
+		stats.print(false);
+	//malloc_stats_print(NULL, NULL, NULL);
+	printf("\n");
+	fflush(stdout);
+	// Free things
 	//tport_manager.shutdown();
-  m_workload->index_delete_all();
+	m_workload->index_delete_all();
 
 	return 0;
 }
 
 void * work_thread(void * id) {
-    Thread * thd = (Thread *) id;
+	Thread * thd = (Thread *) id;
 	thd->run();
 	return NULL;
 }

@@ -21,7 +21,7 @@ public:
   int64_t epoch_txn_cnt;
   uint64_t txn_cnt;
   uint64_t inflight_cnt;
-
+  uint64_t last_da_query_time;
   void init();
   bool is_setup_done();
   bool is_done();

@@ -43,6 +43,18 @@ Sequencer seq_man;
 LogMan logger;
 TimestampBounds txn_timestamp_bounds;
 
+boost::lockfree::queue<DAQuery*, boost::lockfree::fixed_sized<true>> da_query_queue{100};
+DABlockQueue da_gen_qry_queue(50);
+bool is_server=false;
+map<uint64_t, ts_t> da_start_stamp_tab;
+set<uint64_t> da_start_trans_tab;
+map<uint64_t, ts_t> da_stamp_tab;
+set<uint64_t> already_abort_tab;
+string DA_history_mem;
+bool abort_history;
+ofstream commit_file;
+ofstream abort_file;
+
 bool volatile warmup_done = false;
 bool volatile enable_thread_mem_pool = false;
 pthread_barrier_t warmup_bar;

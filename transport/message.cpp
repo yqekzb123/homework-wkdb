@@ -8,6 +8,8 @@
 #include "global.h"
 #include "message.h"
 #include "occ_template.h"
+#include "da.h"
+#include "da_query.h"
 
 std::vector<Msg*> * Msg::create_messages(char * buf) {
   std::vector<Msg*> * all_msgs = new std::vector<Msg*>;
@@ -75,6 +77,8 @@ Msg * Msg::create_message(BaseQry * query, RemReqType rtype) {
  ((QueryMsgClientTPCC*)message)->copy_from_query(query);
 #elif WORKLOAD == PPS 
  ((PPSClientQueryMessage*)message)->copy_from_query(query);
+#elif  WORKLOAD == DA
+  ((DAClientQueryMessage*)message)->copy_from_query(query);
 #endif
  return message;
 }
@@ -108,6 +112,8 @@ Msg * Msg::create_message(RemReqType rtype) {
       message = new PPSQueryMessage;
 #elif WORKLOAD == TEST
       message = new QueryMsgTPCC;
+#elif WORKLOAD == DA
+      message = new DAQueryMessage;
 #endif
       message->init();
       break;
@@ -142,6 +148,8 @@ Msg * Msg::create_message(RemReqType rtype) {
       message = new PPSClientQueryMessage;
 #elif WORKLOAD == TEST
       message = new QueryMsgClientTPCC;
+#elif WORKLOAD == DA
+      message = new DAClientQueryMessage;
 #endif
       message->init();
       break;
@@ -272,6 +280,8 @@ void Msg::release_message(Msg * message) {
       QueryMsgTPCC * m_msg = (QueryMsgTPCC*)message;
 #elif WORKLOAD == TEST
       QueryMsgTPCC * m_msg = (QueryMsgTPCC*)message;
+#elif WORKLOAD == DA
+      DAQueryMessage* m_msg = (DAQueryMessage*)message;
 #endif
       m_msg->release();
       delete m_msg;
@@ -326,6 +336,8 @@ void Msg::release_message(Msg * message) {
       PPSClientQueryMessage * m_msg = (PPSClientQueryMessage*)message;
 #elif WORKLOAD == TEST
       QueryMsgClientTPCC * m_msg = (QueryMsgClientTPCC*)message;
+#elif WORKLOAD == DA
+      DAClientQueryMessage* m_msg = (DAClientQueryMessage*)message;
 #endif
       m_msg->release();
       delete m_msg;
@@ -643,6 +655,84 @@ void QueryMsgClientTPCC::copy_to_buf(char * buf) {
   COPY_BUF(buf,o_entry_d,ptr);
  assert(ptr == get_size());
 }
+
+
+/***************DA zone*********/
+void DAClientQueryMessage::init() {}
+void DAClientQueryMessage::copy_from_query(BaseQry* query) {
+  ClientQryMsg::copy_from_query(query);
+  DAQuery* da_query = (DAQuery*)(query);
+
+  txn_type= da_query->txn_type;
+	trans_id= da_query->trans_id;
+	item_id= da_query->item_id;
+	seq_id= da_query->seq_id;
+	write_version=da_query->write_version;
+  state= da_query->state;
+	next_state= da_query->next_state;
+	last_state= da_query->last_state;
+}
+void DAClientQueryMessage::copy_to_buf(char* buf) {
+  ClientQryMsg::copy_to_buf(buf);
+  uint64_t ptr = ClientQryMsg::get_size();
+
+  COPY_BUF(buf, txn_type, ptr);
+  COPY_BUF(buf, trans_id, ptr);
+  COPY_BUF(buf, item_id, ptr);
+  COPY_BUF(buf, seq_id, ptr);
+  COPY_BUF(buf, write_version, ptr);
+  COPY_BUF(buf, state, ptr);
+  COPY_BUF(buf, next_state, ptr);
+  COPY_BUF(buf, last_state, ptr);
+  assert(ptr == get_size());
+}
+void DAClientQueryMessage::copy_from_txn(TxnMgr* txn) {
+  ClientQryMsg::mcopy_from_txn(txn);
+  copy_from_query(txn->query);
+}
+
+void DAClientQueryMessage::copy_from_buf(char* buf) {
+  ClientQryMsg::copy_from_buf(buf);
+  uint64_t ptr = ClientQryMsg::get_size();
+
+  COPY_VAL(txn_type, buf, ptr);
+  // common txn input for both payment & new-order
+  COPY_VAL(trans_id, buf, ptr);
+  COPY_VAL(item_id, buf, ptr);
+  COPY_VAL(seq_id, buf, ptr);
+  COPY_VAL(write_version, buf, ptr);
+  // payment
+  COPY_VAL(state, buf, ptr);
+  COPY_VAL(next_state, buf, ptr);
+  COPY_VAL(last_state, buf, ptr);
+  assert(ptr == get_size());
+}
+
+void DAClientQueryMessage::copy_to_txn(TxnMgr* txn) {
+  ClientQryMsg::copy_to_txn(txn);
+  DAQuery* da_query = (DAQuery*)(txn->query);
+
+
+  txn->client_id = return_node_id;
+  da_query->txn_type = (DATxnType)txn_type;
+  da_query->trans_id = trans_id;
+  da_query->item_id = item_id;
+  da_query->seq_id = seq_id;
+  da_query->write_version = write_version;
+  da_query->state = state;
+  da_query->next_state = next_state;
+  da_query->last_state = last_state;
+
+}
+
+uint64_t DAClientQueryMessage::get_size() {
+  uint64_t size = ClientQryMsg::get_size();
+  size += sizeof(DATxnType);
+  size += sizeof(uint64_t) * 7;
+  return size;
+
+}
+void DAClientQueryMessage::release() { ClientQryMsg::release(); }
 
 /************************/
 
@@ -1368,3 +1458,90 @@ void QueryMsgTPCC::copy_to_buf(char * buf) {
  assert(ptr == get_size());
 
 }
+
+//---DAquerymessage zone------------
+
+void DAQueryMessage::init() {}
+/*
+void DAQueryMessage::copy_from_query(BaseQuery* query) {
+  QueryMessage::copy_from_query(query);
+  DAQuery* da_query = (DAQuery*)(query);
+
+  txn_type= da_query->txn_type;
+	trans_id= da_query->trans_id;
+	item_id= da_query->item_id;
+	seq_id= da_query->seq_id;
+	write_version=da_query->write_version;
+  state= da_query->state;
+	next_state= da_query->next_state;
+	last_state= da_query->last_state;
+}*/
+void DAQueryMessage::copy_to_buf(char* buf) {
+  QueryMessage::copy_to_buf(buf);
+  uint64_t ptr = QueryMessage::get_size();
+
+  COPY_BUF(buf, txn_type, ptr);
+  COPY_BUF(buf, trans_id, ptr);
+  COPY_BUF(buf, item_id, ptr);
+  COPY_BUF(buf, seq_id, ptr);
+  COPY_BUF(buf, write_version, ptr);
+  COPY_BUF(buf, state, ptr);
+  COPY_BUF(buf, next_state, ptr);
+  COPY_BUF(buf, last_state, ptr);
+
+}
+void DAQueryMessage::copy_from_txn(TxnMgr* txn) {
+  QueryMessage::mcopy_from_txn(txn);
+  DAQuery* da_query = (DAQuery*)(txn->query);
+
+  txn_type = da_query->txn_type;
+  trans_id = da_query->trans_id;
+  item_id = da_query->item_id;
+  seq_id = da_query->seq_id;
+  write_version = da_query->write_version;
+  state = da_query->state;
+  next_state = da_query->next_state;
+  last_state = da_query->last_state;
+}
+
+void DAQueryMessage::copy_from_buf(char* buf) {
+  QueryMessage::copy_from_buf(buf);
+  uint64_t ptr = QueryMessage::get_size();
+
+  COPY_VAL(txn_type, buf, ptr);
+  // common txn input for both payment & new-order
+  COPY_VAL(trans_id, buf, ptr);
+  COPY_VAL(item_id, buf, ptr);
+  COPY_VAL(seq_id, buf, ptr);
+  COPY_VAL(write_version, buf, ptr);
+  // payment
+  COPY_VAL(state, buf, ptr);
+  COPY_VAL(next_state, buf, ptr);
+  COPY_VAL(last_state, buf, ptr);
+  assert(ptr == get_size());
+}
+
+void DAQueryMessage::copy_to_txn(TxnMgr* txn) {
+  QueryMessage::copy_to_txn(txn);
+  DAQuery* da_query = (DAQuery*)(txn->query);
+
+
+  txn->client_id = return_node_id;
+  da_query->txn_type = (DATxnType)txn_type;
+  da_query->trans_id = trans_id;
+  da_query->item_id = item_id;
+  da_query->seq_id = seq_id;
+  da_query->write_version = write_version;
+  da_query->state = state;
+  da_query->next_state = next_state;
+  da_query->last_state = last_state;
+
+}
+
+uint64_t DAQueryMessage::get_size() {
+  uint64_t size = QueryMessage::get_size();
+  size += sizeof(DATxnType);
+  size += sizeof(uint64_t) * 7;
+  return size;
+}
+void DAQueryMessage::release() { QueryMessage::release(); }

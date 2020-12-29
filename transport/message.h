@@ -323,6 +323,27 @@ public:
 
 };
 
+class DAClientQueryMessage : public ClientQryMsg {
+ public:
+  void copy_from_buf(char* buf);//ok
+  void copy_to_buf(char* buf);//ok
+  void copy_from_query(BaseQry* query);//ok
+  void copy_from_txn(TxnMgr* txn);//ok
+  void copy_to_txn(TxnMgr* txn);
+  uint64_t get_size();
+  void init();
+  void release();
+
+  DATxnType txn_type;
+	uint64_t trans_id;
+	uint64_t item_id;
+	uint64_t seq_id;
+	uint64_t write_version;
+	uint64_t state;
+	uint64_t next_state;
+	uint64_t last_state;
+};
+
 class QueryMessage : public Msg {
 public:
   void copy_from_buf(char * buf);
@@ -413,5 +434,24 @@ public:
   Array<uint64_t> part_keys;
 };
 
+class DAQueryMessage : public QueryMessage {
+ public:
+  void copy_from_buf(char* buf);
+  void copy_to_buf(char* buf);
+  void copy_from_txn(TxnMgr* txn);
+  void copy_to_txn(TxnMgr* txn);
+  uint64_t get_size();
+  void init();
+  void release();
+
+  DATxnType txn_type;
+	uint64_t trans_id;
+	uint64_t item_id;
+	uint64_t seq_id;
+	uint64_t write_version;
+	uint64_t state;
+	uint64_t next_state;
+	uint64_t last_state;
+};
 
 #endif

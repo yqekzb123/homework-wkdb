@@ -15,7 +15,7 @@
 
 void ClientThread::setup() {
 	if( _thd_id == 0) {
-    send_init_done_to_nodes();
+	send_init_done_to_nodes();
   }
 #if LOAD_METHOD == LOAD_RATE
   assert(g_per_server_load > 0);
@@ -53,14 +53,16 @@ RC ClientThread::run() {
 		if (iters == UINT64_MAX)
 			iters = 0;
 #if LOAD_METHOD == LOAD_MAX
+#if WORKLOAD != DA
 		if ((inf_cnt = client_man.inc_inflight(next_node)) < 0)
 			continue;
-
+#endif
 		m_query = qry_queue_client.get_next_query(next_node,_thd_id);
     if(last_send_time > 0) {
       INC_STATS(read_thd_id(),cl_send_intv,acquire_ts() - last_send_time);
     }
     last_send_time = acquire_ts();
+    simulate_man->last_da_query_time = acquire_ts();
 #elif LOAD_METHOD == LOAD_RATE
 		if ((inf_cnt = client_man.inc_inflight(next_node)) < 0)
 			continue;
@@ -85,7 +87,9 @@ RC ClientThread::run() {
 		num_txns_sent++;
 		txns_sent[next_node]++;
     INC_STATS(read_thd_id(),txn_sent_cnt,1);
-
+		#if WORKLOAD==DA
+			delete m_query;
+		#endif
 	}
 
 

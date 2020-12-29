@@ -46,6 +46,7 @@ void Stats_thd::clear() {
   local_txn_commit_cnt=0;
   remote_txn_commit_cnt=0;
   total_txn_abort_cnt=0;
+  positive_txn_abort_cnt=0;
   unique_txn_abort_cnt=0;
   local_txn_abort_cnt=0;
   remote_txn_abort_cnt=0;
@@ -425,6 +426,7 @@ void Stats_thd::print(FILE * outf, bool prog) {
   ",local_txn_commit_cnt=%ld"
   ",remote_txn_commit_cnt=%ld"
   ",total_txn_abort_cnt=%ld"
+  ",positive_txn_abort_cnt=%ld"
   ",unique_txn_abort_cnt=%ld"
   ",local_txn_abort_cnt=%ld"
   ",remote_txn_abort_cnt=%ld"
@@ -449,6 +451,7 @@ void Stats_thd::print(FILE * outf, bool prog) {
   ,local_txn_commit_cnt
   ,remote_txn_commit_cnt
   ,total_txn_abort_cnt
+  ,positive_txn_abort_cnt
   ,unique_txn_abort_cnt
   ,local_txn_abort_cnt
   ,remote_txn_abort_cnt
@@ -1150,6 +1153,7 @@ void Stats_thd::combine(Stats_thd * stats) {
   local_txn_commit_cnt+=stats->local_txn_commit_cnt;
   remote_txn_commit_cnt+=stats->remote_txn_commit_cnt;
   total_txn_abort_cnt+=stats->total_txn_abort_cnt;
+  positive_txn_abort_cnt+=stats->positive_txn_abort_cnt;
   unique_txn_abort_cnt+=stats->unique_txn_abort_cnt;
   local_txn_abort_cnt+=stats->local_txn_abort_cnt;
   remote_txn_abort_cnt+=stats->remote_txn_abort_cnt;

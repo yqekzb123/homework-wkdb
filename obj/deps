@@ -1,358 +1,433 @@
 obj/config.o: config.cpp config.h
+obj/da_wl.o: benchmarks/da_wl.cpp benchmarks/da.h config.h system/query.h \
+ system/global.h statistics/stats.h statistics/stats_array.h \
+ system/pool.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/global.h system/array.h \
+ system/mem_alloc.h storage/row.h system/txn.h system/workload.h \
+ benchmarks/creator.h benchmarks/generic.h benchmarks/da_const.h \
+ system/universal.h storage/IndexBTree.h storage/IndexBase.h \
+ storage/IndexHash.h system/mem_alloc.h storage/table.h system/thread.h
 obj/qry_tpcc.o: benchmarks/qry_tpcc.cpp system/query.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/array.h system/mem_alloc.h \
- benchmarks/qry_tpcc.h system/global.h system/universal.h \
- benchmarks/tpcc.h system/workload.h system/txn.h storage/row.h \
- benchmarks/universal_tpcc.h system/mem_alloc.h storage/table.h \
- transport/message.h system/logMan.h system/array.h
-obj/txn_ycsb.o: benchmarks/txn_ycsb.cpp system/global.h config.h \
- statistics/stats.h statistics/stats_array.h system/pool.h \
- system/global.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h benchmarks/ycsb.h system/workload.h system/txn.h \
- system/array.h system/mem_alloc.h benchmarks/qry_ycsb.h system/query.h \
- system/array.h system/thread.h storage/table.h storage/row.h \
- storage/IndexHash.h storage/IndexBase.h storage/IndexBTree.h \
- storage/catalog.h system/manager.h system/mem_alloc.h system/msg_queue.h \
- system/lock_free_queue.h transport/message.h system/logMan.h
-obj/wl_ycsb.o: benchmarks/wl_ycsb.cpp system/global.h config.h \
- statistics/stats.h statistics/stats_array.h system/pool.h \
- system/global.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h benchmarks/ycsb.h system/workload.h system/txn.h \
- system/array.h system/mem_alloc.h system/thread.h storage/table.h \
- storage/row.h storage/IndexHash.h storage/IndexBase.h \
- storage/IndexBTree.h storage/catalog.h system/manager.h \
- system/mem_alloc.h system/query.h
-obj/txn_ctest.o: benchmarks/txn_ctest.cpp benchmarks/test.h system/workload.h \
- system/global.h config.h statistics/stats.h statistics/stats_array.h \
- system/pool.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h system/txn.h \
- system/array.h system/mem_alloc.h system/global.h storage/row.h
-obj/universal_tpcc.o: benchmarks/universal_tpcc.cpp \
- benchmarks/universal_tpcc.h system/global.h config.h statistics/stats.h \
- statistics/stats_array.h system/pool.h system/global.h \
- system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/universal.h
-obj/wl_ctest.o: benchmarks/wl_ctest.cpp benchmarks/test.h system/workload.h \
- system/global.h config.h statistics/stats.h statistics/stats_array.h \
- system/pool.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h system/txn.h \
- system/array.h system/mem_alloc.h system/global.h storage/table.h \
- storage/row.h system/mem_alloc.h storage/IndexHash.h system/universal.h \
- storage/IndexBase.h storage/IndexBTree.h system/thread.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/array.h system/mem_alloc.h benchmarks/qry_tpcc.h \
+ system/universal.h benchmarks/tpcc.h system/workload.h system/txn.h \
+ storage/row.h benchmarks/universal_tpcc.h system/mem_alloc.h \
+ storage/table.h transport/message.h system/logMan.h system/array.h
 obj/wl_tpcc.o: benchmarks/wl_tpcc.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h benchmarks/tpcc.h system/workload.h system/txn.h \
- system/array.h system/mem_alloc.h system/query.h storage/row.h \
- system/thread.h storage/table.h storage/IndexHash.h storage/IndexBase.h \
- storage/IndexBTree.h benchmarks/universal_tpcc.h system/mem_alloc.h \
- benchmarks/const_tpcc.h
-obj/qry_ycsb.o: benchmarks/qry_ycsb.cpp system/query.h system/global.h \
- config.h statistics/stats.h statistics/stats_array.h system/pool.h \
+ benchmarks/da_block_queue.h system/universal.h benchmarks/tpcc.h \
+ system/workload.h system/txn.h system/array.h system/mem_alloc.h \
+ system/query.h storage/row.h system/thread.h storage/table.h \
+ storage/IndexHash.h storage/IndexBase.h storage/IndexBTree.h \
+ benchmarks/universal_tpcc.h system/mem_alloc.h benchmarks/const_tpcc.h
+obj/wl_ycsb.o: benchmarks/wl_ycsb.cpp system/global.h config.h \
+ statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/global.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/universal.h benchmarks/ycsb.h \
+ system/workload.h system/txn.h system/array.h system/mem_alloc.h \
+ system/thread.h storage/table.h storage/row.h storage/IndexHash.h \
+ storage/IndexBase.h storage/IndexBTree.h storage/catalog.h \
+ system/manager.h system/mem_alloc.h system/query.h
+obj/txn_ycsb.o: benchmarks/txn_ycsb.cpp system/global.h config.h \
+ statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/global.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/universal.h benchmarks/ycsb.h \
+ system/workload.h system/txn.h system/array.h system/mem_alloc.h \
+ benchmarks/qry_ycsb.h system/query.h system/array.h system/thread.h \
+ storage/table.h storage/row.h storage/IndexHash.h storage/IndexBase.h \
+ storage/IndexBTree.h storage/catalog.h system/manager.h \
+ system/mem_alloc.h system/msg_queue.h system/lock_free_queue.h \
+ transport/message.h system/logMan.h
+obj/wl_ctest.o: benchmarks/wl_ctest.cpp benchmarks/test.h system/workload.h \
+ system/global.h config.h statistics/stats.h statistics/stats_array.h \
+ system/pool.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/global.h system/txn.h system/array.h \
+ system/mem_alloc.h storage/table.h storage/row.h system/mem_alloc.h \
+ storage/IndexHash.h system/universal.h storage/IndexBase.h \
+ storage/IndexBTree.h system/thread.h
+obj/generic.o: benchmarks/generic.cpp benchmarks/generic.h
+obj/da_query_queue.o: benchmarks/da_query_queue.cpp
+obj/universal_tpcc.o: benchmarks/universal_tpcc.cpp \
+ benchmarks/universal_tpcc.h system/global.h config.h statistics/stats.h \
+ statistics/stats_array.h system/pool.h system/global.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/array.h system/mem_alloc.h \
- benchmarks/qry_ycsb.h system/global.h system/universal.h system/array.h \
- system/mem_alloc.h system/workload.h benchmarks/ycsb.h system/txn.h \
- storage/table.h transport/message.h system/logMan.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/universal.h
+obj/txn_ctest.o: benchmarks/txn_ctest.cpp benchmarks/test.h system/workload.h \
+ system/global.h config.h statistics/stats.h statistics/stats_array.h \
+ system/pool.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/global.h system/txn.h system/array.h \
+ system/mem_alloc.h storage/row.h
 obj/txn_tpcc.o: benchmarks/txn_tpcc.cpp benchmarks/tpcc.h system/workload.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h system/txn.h \
- system/array.h system/mem_alloc.h system/query.h storage/row.h \
- system/global.h benchmarks/qry_tpcc.h system/universal.h \
- benchmarks/universal_tpcc.h system/thread.h storage/table.h \
- storage/IndexHash.h storage/IndexBase.h storage/IndexBTree.h \
- benchmarks/const_tpcc.h transport/transport.h transport/nn.hpp \
- system/msg_queue.h system/lock_free_queue.h transport/message.h \
- system/logMan.h system/array.h
-obj/test_wl.o: benchmarks/test_wl.cpp benchmarks/test.h system/workload.h \
- system/global.h config.h statistics/stats.h statistics/stats_array.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/global.h system/txn.h system/array.h \
+ system/mem_alloc.h system/query.h storage/row.h benchmarks/qry_tpcc.h \
+ system/universal.h benchmarks/universal_tpcc.h system/thread.h \
+ storage/table.h storage/IndexHash.h storage/IndexBase.h \
+ storage/IndexBTree.h benchmarks/const_tpcc.h transport/transport.h \
+ transport/nn.hpp system/msg_queue.h system/lock_free_queue.h \
+ transport/message.h system/logMan.h system/array.h
+obj/da_block_queue.o: benchmarks/da_block_queue.cpp \
+ benchmarks/da_block_queue.h system/global.h config.h statistics/stats.h \
+ statistics/stats_array.h system/pool.h system/global.h \
+ system/universal.h system/concurrentqueue.h system/txn_table.h \
+ system/logMan.h system/sim_manager.h
+obj/da_txn.o: benchmarks/da_txn.cpp config.h benchmarks/da.h system/query.h \
+ system/global.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h system/txn.h \
- system/array.h system/mem_alloc.h system/global.h storage/table.h \
- storage/row.h system/mem_alloc.h storage/IndexHash.h system/universal.h \
- storage/IndexBase.h storage/IndexBTree.h system/thread.h
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/global.h system/array.h \
+ system/mem_alloc.h storage/row.h system/txn.h system/workload.h \
+ benchmarks/creator.h benchmarks/generic.h benchmarks/da_const.h \
+ benchmarks/da_query.h system/universal.h storage/IndexBTree.h \
+ storage/IndexBase.h storage/IndexHash.h transport/message.h \
+ system/logMan.h system/array.h system/msg_queue.h \
+ system/lock_free_queue.h storage/table.h system/thread.h \
+ transport/transport.h transport/nn.hpp
+obj/qry_ycsb.o: benchmarks/qry_ycsb.cpp system/query.h system/global.h \
+ config.h statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/universal.h system/concurrentqueue.h system/txn_table.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/array.h system/mem_alloc.h benchmarks/qry_ycsb.h \
+ system/universal.h system/array.h system/mem_alloc.h system/workload.h \
+ benchmarks/ycsb.h system/txn.h storage/table.h transport/message.h \
+ system/logMan.h
+obj/creator.o: benchmarks/creator.cpp benchmarks/creator.h \
+ benchmarks/generic.h
+obj/da_query.o: benchmarks/da_query.cpp system/query.h system/global.h \
+ config.h statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/universal.h system/concurrentqueue.h system/txn_table.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/array.h system/mem_alloc.h benchmarks/da_query.h \
+ system/universal.h benchmarks/da.h storage/row.h system/txn.h \
+ system/workload.h benchmarks/creator.h benchmarks/generic.h \
+ system/mem_alloc.h storage/table.h transport/message.h system/logMan.h \
+ system/array.h
 obj/client_query.o: client/client_query.cpp client/client_query.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/global.h system/universal.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h system/universal.h system/query.h system/array.h \
- system/mem_alloc.h system/mem_alloc.h system/workload.h storage/table.h \
- benchmarks/qry_ycsb.h system/array.h benchmarks/qry_tpcc.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/universal.h \
+ system/query.h system/array.h system/mem_alloc.h system/mem_alloc.h \
+ system/workload.h storage/table.h benchmarks/qry_ycsb.h system/array.h \
+ benchmarks/qry_tpcc.h benchmarks/da_query.h benchmarks/da.h \
+ storage/row.h system/txn.h benchmarks/creator.h benchmarks/generic.h
 obj/client_txn.o: client/client_txn.cpp client/client_txn.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- system/mem_alloc.h
-obj/occ_template.o: concurrency_control/occ_template.cpp system/global.h \
- config.h statistics/stats.h statistics/stats_array.h system/pool.h \
- system/global.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h system/txn.h system/array.h system/mem_alloc.h \
- concurrency_control/occ_template.h storage/row.h system/manager.h \
- system/mem_alloc.h concurrency_control/row_occ_template.h
+ benchmarks/da_block_queue.h system/mem_alloc.h
 obj/row_occ_template.o: concurrency_control/row_occ_template.cpp \
  storage/row.h system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/global.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/txn.h system/array.h \
- system/mem_alloc.h concurrency_control/row_occ_template.h \
- system/mem_alloc.h system/manager.h system/universal.h \
- concurrency_control/occ_template.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/txn.h system/array.h system/mem_alloc.h \
+ concurrency_control/row_occ_template.h system/mem_alloc.h \
+ system/manager.h system/universal.h concurrency_control/occ_template.h
+obj/row_mvcc.o: concurrency_control/row_mvcc.cpp storage/row.h \
+ system/global.h config.h statistics/stats.h statistics/stats_array.h \
+ system/pool.h system/global.h system/universal.h \
+ system/concurrentqueue.h system/txn_table.h system/logMan.h \
+ system/sim_manager.h benchmarks/da_block_queue.h system/txn.h \
+ system/array.h system/mem_alloc.h concurrency_control/row_mvcc.h \
+ system/mem_alloc.h system/manager.h system/universal.h
+obj/occ_template.o: concurrency_control/occ_template.cpp system/global.h \
+ config.h statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/global.h system/universal.h system/concurrentqueue.h \
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/universal.h system/txn.h \
+ system/array.h system/mem_alloc.h concurrency_control/occ_template.h \
+ storage/row.h system/manager.h system/mem_alloc.h \
+ concurrency_control/row_occ_template.h
 obj/catalog.o: storage/catalog.cpp storage/catalog.h system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h
-obj/index_hash.o: storage/index_hash.cpp system/global.h config.h \
- statistics/stats.h statistics/stats_array.h system/pool.h \
- system/global.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h \
- storage/IndexHash.h system/universal.h storage/IndexBase.h \
- system/mem_alloc.h storage/row.h
+ benchmarks/da_block_queue.h system/universal.h
 obj/IndexBTree.o: storage/IndexBTree.cpp system/mem_alloc.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h storage/IndexBTree.h \
- system/global.h system/universal.h storage/IndexBase.h storage/row.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h storage/IndexBTree.h system/universal.h \
+ storage/IndexBase.h storage/row.h
 obj/row.o: storage/row.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/global.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h storage/table.h storage/catalog.h \
- system/universal.h storage/row.h system/txn.h system/array.h \
- system/mem_alloc.h concurrency_control/row_occ_template.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ storage/table.h storage/catalog.h system/universal.h storage/row.h \
+ system/txn.h system/array.h system/mem_alloc.h \
+ concurrency_control/row_occ_template.h concurrency_control/row_mvcc.h \
  system/mem_alloc.h system/manager.h
 obj/IndexHash.o: storage/IndexHash.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- storage/IndexHash.h system/universal.h storage/IndexBase.h \
- system/mem_alloc.h storage/row.h
+ benchmarks/da_block_queue.h storage/IndexHash.h system/universal.h \
+ storage/IndexBase.h system/mem_alloc.h storage/row.h
 obj/table.o: storage/table.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/global.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/universal.h storage/table.h \
- storage/catalog.h storage/row.h system/mem_alloc.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/universal.h storage/table.h storage/catalog.h storage/row.h \
+ system/mem_alloc.h
 obj/message.o: transport/message.cpp system/mem_alloc.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/query.h system/array.h \
- system/mem_alloc.h benchmarks/qry_ycsb.h system/global.h \
- system/universal.h system/array.h benchmarks/ycsb.h system/workload.h \
- system/txn.h benchmarks/qry_tpcc.h benchmarks/tpcc.h storage/row.h \
- transport/message.h system/logMan.h concurrency_control/occ_template.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/query.h system/array.h system/mem_alloc.h \
+ benchmarks/qry_ycsb.h system/universal.h system/array.h \
+ benchmarks/ycsb.h system/workload.h system/txn.h benchmarks/qry_tpcc.h \
+ benchmarks/tpcc.h storage/row.h transport/message.h system/logMan.h \
+ concurrency_control/occ_template.h benchmarks/da.h benchmarks/creator.h \
+ benchmarks/generic.h benchmarks/da_query.h benchmarks/da.h
 obj/msg_thread.o: transport/msg_thread.cpp transport/msg_thread.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/global.h system/universal.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h system/universal.h transport/nn.hpp \
- system/msg_queue.h system/lock_free_queue.h transport/message.h \
- system/logMan.h system/array.h system/mem_alloc.h system/mem_alloc.h \
- transport/transport.h system/query.h system/array.h \
+ system/sim_manager.h benchmarks/da_block_queue.h system/universal.h \
+ transport/nn.hpp system/msg_queue.h system/lock_free_queue.h \
+ transport/message.h system/logMan.h system/array.h system/mem_alloc.h \
+ system/mem_alloc.h transport/transport.h system/query.h system/array.h \
  benchmarks/qry_ycsb.h benchmarks/qry_tpcc.h system/pool.h
 obj/transport.o: transport/transport.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
- system/txn_table.h system/logMan.h system/sim_manager.h system/manager.h \
- transport/transport.h transport/nn.hpp system/query.h system/array.h \
- system/mem_alloc.h benchmarks/qry_tpcc.h system/universal.h \
- transport/message.h system/logMan.h system/array.h
+ system/txn_table.h system/logMan.h system/sim_manager.h \
+ benchmarks/da_block_queue.h system/manager.h transport/transport.h \
+ transport/nn.hpp system/query.h system/array.h system/mem_alloc.h \
+ benchmarks/qry_tpcc.h system/universal.h transport/message.h \
+ system/logMan.h system/array.h
 obj/io_thread.o: system/io_thread.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/manager.h system/thread.h \
- system/io_thread.h system/query.h system/array.h system/mem_alloc.h \
- benchmarks/qry_ycsb.h system/global.h system/universal.h system/query.h \
- system/array.h benchmarks/qry_tpcc.h transport/transport.h \
- transport/nn.hpp transport/msg_thread.h system/msg_queue.h \
- system/lock_free_queue.h transport/message.h system/logMan.h \
- client/client_txn.h system/task_queue.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/manager.h system/thread.h system/io_thread.h \
+ system/query.h system/array.h system/mem_alloc.h benchmarks/qry_ycsb.h \
+ system/universal.h system/query.h system/array.h benchmarks/qry_tpcc.h \
+ transport/transport.h transport/nn.hpp transport/msg_thread.h \
+ system/msg_queue.h system/lock_free_queue.h transport/message.h \
+ system/logMan.h client/client_txn.h system/task_queue.h
 obj/manager.o: system/manager.cpp system/manager.h system/universal.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h storage/row.h system/global.h \
- system/txn.h system/array.h system/mem_alloc.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h storage/row.h system/txn.h system/array.h \
+ system/mem_alloc.h
 obj/pool.o: system/pool.cpp system/pool.h system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/txn_table.h \
  system/universal.h system/logMan.h system/concurrentqueue.h \
- system/sim_manager.h system/txn.h system/array.h system/mem_alloc.h \
- system/workload.h benchmarks/qry_ycsb.h system/global.h \
- system/universal.h system/query.h system/global.h system/universal.h \
- system/array.h system/array.h benchmarks/ycsb.h system/workload.h \
- system/txn.h benchmarks/qry_tpcc.h system/query.h system/msg_queue.h \
- system/lock_free_queue.h storage/row.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ system/txn.h system/array.h system/mem_alloc.h system/workload.h \
+ benchmarks/qry_ycsb.h system/universal.h system/query.h system/global.h \
+ system/universal.h system/array.h system/array.h benchmarks/ycsb.h \
+ system/workload.h system/txn.h benchmarks/qry_tpcc.h benchmarks/da.h \
+ storage/row.h benchmarks/creator.h benchmarks/generic.h \
+ benchmarks/da_query.h benchmarks/da.h system/query.h system/msg_queue.h \
+ system/lock_free_queue.h
 obj/thread.o: system/thread.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/universal.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h system/manager.h system/thread.h system/txn.h \
- system/array.h system/mem_alloc.h system/workload.h system/query.h \
- system/msg_queue.h system/lock_free_queue.h transport/message.h \
- system/global.h system/universal.h system/logMan.h system/array.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ system/manager.h system/thread.h system/txn.h system/array.h \
+ system/mem_alloc.h system/workload.h system/query.h system/msg_queue.h \
+ system/lock_free_queue.h transport/message.h system/universal.h \
+ system/logMan.h system/array.h
+obj/global.o: system/global.cpp system/global.h config.h statistics/stats.h \
+ statistics/stats_array.h system/pool.h system/universal.h \
+ system/concurrentqueue.h system/txn_table.h system/logMan.h \
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ system/mem_alloc.h system/manager.h system/query.h system/array.h \
+ client/client_query.h system/universal.h system/query.h \
+ transport/transport.h transport/nn.hpp system/task_queue.h \
+ system/abort_txn_queue.h system/msg_queue.h system/lock_free_queue.h \
+ client/client_txn.h system/sequencer.h \
+ concurrency_control/occ_template.h storage/row.h
 obj/task_queue.o: system/task_queue.cpp system/task_queue.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/mem_alloc.h system/query.h \
- system/array.h transport/message.h system/global.h system/universal.h \
- system/logMan.h system/array.h client/client_query.h system/query.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/mem_alloc.h system/query.h system/array.h \
+ transport/message.h system/universal.h system/logMan.h system/array.h \
+ client/client_query.h system/query.h
 obj/sim_manager.o: system/sim_manager.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h
-obj/txn.o: system/txn.cpp system/universal.h system/global.h config.h \
- statistics/stats.h statistics/stats_array.h system/pool.h \
- system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h system/txn.h system/array.h system/mem_alloc.h \
- storage/row.h system/global.h system/workload.h system/query.h \
- system/thread.h storage/table.h storage/catalog.h system/universal.h \
- storage/IndexBTree.h storage/IndexBase.h storage/IndexHash.h \
- system/msg_queue.h system/lock_free_queue.h transport/message.h \
- system/logMan.h system/array.h benchmarks/qry_ycsb.h system/query.h \
- benchmarks/qry_tpcc.h concurrency_control/occ_template.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h
 obj/msg_queue.o: system/msg_queue.cpp system/msg_queue.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/lock_free_queue.h \
- system/mem_alloc.h system/query.h system/array.h transport/message.h \
- system/global.h system/universal.h system/logMan.h system/array.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/lock_free_queue.h system/mem_alloc.h \
+ system/query.h system/array.h transport/message.h system/universal.h \
+ system/logMan.h system/array.h
 obj/log_thread.o: system/log_thread.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/thread.h system/log_thread.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/thread.h system/log_thread.h
 obj/logMan.o: system/logMan.cpp system/logMan.h system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/sim_manager.h system/task_queue.h transport/message.h \
- system/global.h system/universal.h system/logMan.h system/array.h \
- system/global.h system/universal.h system/mem_alloc.h system/mem_alloc.h
-obj/calvin_txn_thread.o: system/calvin_txn_thread.cpp system/global.h \
- config.h statistics/stats.h statistics/stats_array.h system/pool.h \
- system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/manager.h system/thread.h \
- system/calvin_txn_thread.h system/txn.h system/array.h \
- system/mem_alloc.h system/workload.h system/query.h \
- benchmarks/qry_ycsb.h system/global.h system/universal.h system/query.h \
- system/array.h benchmarks/qry_tpcc.h transport/transport.h \
- transport/nn.hpp transport/msg_thread.h system/msg_queue.h \
- system/lock_free_queue.h system/sequencer.h transport/message.h \
- system/logMan.h system/task_queue.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ system/task_queue.h transport/message.h system/universal.h \
+ system/logMan.h system/array.h system/global.h system/universal.h \
+ system/mem_alloc.h system/mem_alloc.h
 obj/abort_txn_queue.o: system/abort_txn_queue.cpp system/mem_alloc.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- system/abort_txn_queue.h transport/message.h system/global.h \
- system/universal.h system/logMan.h system/array.h system/global.h \
- system/universal.h system/mem_alloc.h system/task_queue.h
+ benchmarks/da_block_queue.h system/global.h system/abort_txn_queue.h \
+ transport/message.h system/universal.h system/logMan.h system/array.h \
+ system/global.h system/universal.h system/mem_alloc.h \
+ system/task_queue.h
 obj/universal.o: system/universal.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/mem_alloc.h
-obj/global.o: system/global.cpp system/global.h config.h statistics/stats.h \
- statistics/stats_array.h system/pool.h system/universal.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/mem_alloc.h
+obj/txn.o: system/txn.cpp system/universal.h system/global.h config.h \
+ statistics/stats.h statistics/stats_array.h system/pool.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h system/mem_alloc.h system/manager.h system/query.h \
- system/array.h client/client_query.h system/global.h system/universal.h \
- system/query.h transport/transport.h transport/nn.hpp \
- system/task_queue.h system/abort_txn_queue.h system/msg_queue.h \
- system/lock_free_queue.h client/client_txn.h system/sequencer.h \
- concurrency_control/occ_template.h storage/row.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ system/txn.h system/array.h system/mem_alloc.h storage/row.h \
+ system/workload.h system/query.h system/thread.h storage/table.h \
+ storage/catalog.h system/universal.h storage/IndexBTree.h \
+ storage/IndexBase.h storage/IndexHash.h system/msg_queue.h \
+ system/lock_free_queue.h transport/message.h system/logMan.h \
+ system/array.h benchmarks/qry_ycsb.h system/query.h \
+ benchmarks/qry_tpcc.h concurrency_control/occ_template.h
 obj/abort_txn_thread.o: system/abort_txn_thread.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/thread.h \
- system/abort_txn_thread.h system/abort_txn_queue.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/thread.h system/abort_txn_thread.h \
+ system/abort_txn_queue.h
 obj/client_thread.o: system/client_thread.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/thread.h \
- system/client_thread.h system/query.h system/array.h system/mem_alloc.h \
- benchmarks/qry_ycsb.h system/global.h system/universal.h system/query.h \
- system/array.h benchmarks/qry_tpcc.h client/client_query.h \
- transport/transport.h transport/nn.hpp client/client_txn.h \
- transport/msg_thread.h system/msg_queue.h system/lock_free_queue.h \
- system/workload.h transport/message.h system/logMan.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/thread.h system/client_thread.h system/query.h \
+ system/array.h system/mem_alloc.h benchmarks/qry_ycsb.h \
+ system/universal.h system/query.h system/array.h benchmarks/qry_tpcc.h \
+ client/client_query.h transport/transport.h transport/nn.hpp \
+ client/client_txn.h transport/msg_thread.h system/msg_queue.h \
+ system/lock_free_queue.h system/workload.h transport/message.h \
+ system/logMan.h
+obj/task_thread.o: system/task_thread.cpp system/global.h config.h \
+ statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/universal.h system/concurrentqueue.h system/txn_table.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/manager.h system/thread.h system/task_thread.h \
+ system/txn.h system/array.h system/mem_alloc.h system/workload.h \
+ system/query.h benchmarks/qry_ycsb.h system/universal.h system/query.h \
+ system/array.h benchmarks/qry_tpcc.h benchmarks/test.h system/workload.h \
+ system/txn.h transport/msg_thread.h transport/nn.hpp system/msg_queue.h \
+ system/lock_free_queue.h system/task_queue.h transport/message.h \
+ system/logMan.h system/abort_txn_queue.h \
+ concurrency_control/occ_template.h storage/row.h
 obj/lock_free_queue.o: system/lock_free_queue.cpp system/universal.h \
  system/global.h config.h statistics/stats.h statistics/stats_array.h \
  system/pool.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/lock_free_queue.h
-obj/worker_thread.o: system/worker_thread.cpp system/global.h config.h \
- statistics/stats.h statistics/stats_array.h system/pool.h \
- system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/manager.h system/thread.h \
- system/worker_thread.h system/txn.h system/array.h system/mem_alloc.h \
- system/workload.h system/query.h benchmarks/qry_ycsb.h system/global.h \
- system/universal.h system/query.h system/array.h benchmarks/qry_tpcc.h \
- benchmarks/test.h system/workload.h system/txn.h transport/msg_thread.h \
- transport/nn.hpp system/msg_queue.h system/lock_free_queue.h \
- system/task_queue.h transport/message.h system/logMan.h \
- system/abort_txn_queue.h concurrency_control/occ_template.h \
- storage/row.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/lock_free_queue.h
 obj/parser.o: system/parser.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/universal.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h
 obj/workload.o: system/workload.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/workload.h storage/row.h \
- system/global.h storage/table.h storage/IndexHash.h system/universal.h \
- storage/IndexBase.h storage/IndexBTree.h storage/catalog.h \
- system/mem_alloc.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/workload.h storage/row.h storage/table.h \
+ storage/IndexHash.h system/universal.h storage/IndexBase.h \
+ storage/IndexBTree.h storage/catalog.h system/mem_alloc.h
+obj/calvin_txn_thread.o: system/calvin_txn_thread.cpp system/global.h \
+ config.h statistics/stats.h statistics/stats_array.h system/pool.h \
+ system/universal.h system/concurrentqueue.h system/txn_table.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/manager.h system/thread.h \
+ system/calvin_txn_thread.h system/txn.h system/array.h \
+ system/mem_alloc.h system/workload.h system/query.h \
+ benchmarks/qry_ycsb.h system/universal.h system/query.h system/array.h \
+ benchmarks/qry_tpcc.h transport/transport.h transport/nn.hpp \
+ transport/msg_thread.h system/msg_queue.h system/lock_free_queue.h \
+ system/sequencer.h transport/message.h system/logMan.h \
+ system/task_queue.h
 obj/txn_table.o: system/txn_table.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h benchmarks/qry_tpcc.h \
- system/global.h system/universal.h system/query.h system/global.h \
- system/universal.h system/array.h system/mem_alloc.h benchmarks/tpcc.h \
- system/workload.h system/txn.h storage/row.h benchmarks/qry_ycsb.h \
- system/array.h benchmarks/ycsb.h system/query.h system/txn.h \
- system/mem_alloc.h system/task_queue.h transport/message.h \
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h benchmarks/qry_tpcc.h system/universal.h system/query.h \
+ system/global.h system/universal.h system/array.h system/mem_alloc.h \
+ benchmarks/tpcc.h system/workload.h system/txn.h storage/row.h \
+ benchmarks/qry_ycsb.h system/array.h benchmarks/ycsb.h system/query.h \
+ system/txn.h system/mem_alloc.h system/task_queue.h transport/message.h \
  system/logMan.h
 obj/main.o: system/main.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/universal.h \
  system/concurrentqueue.h system/txn_table.h system/logMan.h \
- system/sim_manager.h benchmarks/ycsb.h system/workload.h system/global.h \
- system/txn.h system/universal.h system/array.h system/mem_alloc.h \
- system/global.h system/universal.h benchmarks/tpcc.h system/query.h \
- storage/row.h benchmarks/test.h system/thread.h system/worker_thread.h \
- system/calvin_txn_thread.h system/abort_txn_thread.h system/io_thread.h \
- system/log_thread.h system/manager.h system/query.h \
- transport/transport.h transport/nn.hpp system/msg_queue.h \
- system/lock_free_queue.h benchmarks/qry_ycsb.h system/array.h \
- system/sequencer.h system/abort_txn_queue.h system/task_queue.h \
- concurrency_control/occ_template.h client/client_query.h
+ system/sim_manager.h benchmarks/da_block_queue.h system/global.h \
+ benchmarks/ycsb.h system/workload.h system/global.h system/txn.h \
+ system/universal.h system/array.h system/mem_alloc.h system/universal.h \
+ benchmarks/tpcc.h system/query.h storage/row.h benchmarks/test.h \
+ system/thread.h system/task_thread.h system/calvin_txn_thread.h \
+ system/abort_txn_thread.h system/io_thread.h system/log_thread.h \
+ system/manager.h system/query.h transport/transport.h transport/nn.hpp \
+ system/msg_queue.h system/lock_free_queue.h benchmarks/qry_ycsb.h \
+ system/array.h system/sequencer.h system/abort_txn_queue.h \
+ system/task_queue.h concurrency_control/occ_template.h \
+ client/client_query.h benchmarks/da.h benchmarks/creator.h \
+ benchmarks/generic.h
 obj/mem_alloc.o: system/mem_alloc.cpp system/mem_alloc.h system/global.h \
  config.h statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h jemalloc/jemalloc.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h jemalloc/jemalloc.h
 obj/query.o: system/query.cpp system/query.h system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/array.h system/mem_alloc.h \
- system/workload.h storage/table.h system/global.h benchmarks/qry_ycsb.h \
- system/universal.h system/query.h system/array.h benchmarks/qry_tpcc.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/array.h system/mem_alloc.h system/workload.h \
+ storage/table.h benchmarks/qry_ycsb.h system/universal.h system/query.h \
+ system/array.h benchmarks/qry_tpcc.h benchmarks/da_query.h \
+ benchmarks/da.h storage/row.h system/txn.h system/global.h \
+ system/universal.h system/array.h system/workload.h benchmarks/creator.h \
+ benchmarks/generic.h
 obj/sequencer.o: system/sequencer.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/sequencer.h system/query.h \
- system/array.h system/mem_alloc.h benchmarks/qry_ycsb.h system/global.h \
- system/universal.h system/query.h system/array.h benchmarks/qry_tpcc.h \
- transport/transport.h transport/nn.hpp system/workload.h \
- system/msg_queue.h system/lock_free_queue.h transport/msg_thread.h \
- system/task_queue.h transport/message.h system/logMan.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/global.h system/sequencer.h system/query.h system/array.h \
+ system/mem_alloc.h benchmarks/qry_ycsb.h system/universal.h \
+ system/query.h system/array.h benchmarks/qry_tpcc.h \
+ benchmarks/da_query.h benchmarks/da.h storage/row.h system/txn.h \
+ system/global.h system/universal.h system/array.h system/workload.h \
+ benchmarks/creator.h benchmarks/generic.h transport/transport.h \
+ transport/nn.hpp system/workload.h system/msg_queue.h \
+ system/lock_free_queue.h transport/msg_thread.h system/task_queue.h \
+ transport/message.h system/logMan.h
 obj/stats.o: statistics/stats.cpp system/global.h config.h statistics/stats.h \
  statistics/stats_array.h system/pool.h system/global.h \
  system/universal.h system/concurrentqueue.h system/txn_table.h \
- system/logMan.h system/sim_manager.h system/universal.h \
- statistics/stats.h system/mem_alloc.h client/client_txn.h \
- system/task_queue.h statistics/stats_array.h
+ system/logMan.h system/sim_manager.h benchmarks/da_block_queue.h \
+ system/universal.h statistics/stats.h system/mem_alloc.h \
+ client/client_txn.h system/task_queue.h statistics/stats_array.h
 obj/stats_array.o: statistics/stats_array.cpp system/global.h config.h \
  statistics/stats.h statistics/stats_array.h system/pool.h \
  system/global.h system/universal.h system/concurrentqueue.h \
  system/txn_table.h system/logMan.h system/sim_manager.h \
- system/universal.h statistics/stats.h system/mem_alloc.h \
- client/client_txn.h system/task_queue.h
+ benchmarks/da_block_queue.h system/universal.h statistics/stats.h \
+ system/mem_alloc.h client/client_txn.h system/task_queue.h

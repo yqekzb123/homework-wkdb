@@ -666,7 +666,7 @@ RC TaskThread::calvin_rtxn_process(Msg * message) {
 
 
 bool TaskThread::is_cc_new_timestamp() {
-  return false;
+  return true;
 }
 
 ts_t TaskThread::get_next_ts() {

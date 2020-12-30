@@ -47,12 +47,12 @@ Qry_queue_client::init(WLSchema * h_wl) {
 #else
 	pthread_t * p_threads = new pthread_t[g_init_parallelism - 1];
 	for (UInt32 i = 0; i < g_init_parallelism - 1; i++) {
-		FUNC_ARGS *arg=(FUNC_ARGS*)mem_allocator.align_alloc(sizeof(FUNC_ARGS));
+		FUNC_ARGS *arg=(FUNC_ARGS*)alloc_memory.align_alloc(sizeof(FUNC_ARGS));
 		arg->context=this;
 		arg->thd_id=i;
 	  	pthread_create(&p_threads[i], NULL, initQueriesHelper,  (void*)arg);
 	}
-	FUNC_ARGS *arg=(FUNC_ARGS*)mem_allocator.align_alloc(sizeof(FUNC_ARGS));
+	FUNC_ARGS *arg=(FUNC_ARGS*)alloc_memory.align_alloc(sizeof(FUNC_ARGS));
 	arg->context=this;
 	arg->thd_id=g_init_parallelism - 1;
 	initQueriesHelper( (void*)arg);

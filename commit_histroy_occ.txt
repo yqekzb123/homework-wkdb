@@ -78,3 +78,7 @@ W0a=1 R1b=0 R1a=0 R1c=0 W1d=1 R0c=0 C1 C0
 W0a=1 R1b=0 W1a=2 R0b=0 R1b=0 W1c=1 A1 C0 
 W0a=1 R1b=0 W1a=2 R1a=2 R0b=0 W1b=1 C0 A1 
 W0a=1 R1b=0 W1a=2 R1c=0 A1 W0b=1 R0b=1 A0 
+W0a=1 R1a=0 W0b=1 A0 C1 
+W0a=1 R1a=0 W1a=2 C0 A1 
+R1a=0 W0a=1 R1a=0 C0 A1 
+R0a=0 R1b=0 W0b=1 W1a=1 C0 A1 
